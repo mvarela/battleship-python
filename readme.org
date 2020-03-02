@@ -1,0 +1,138 @@
+#+TITLE: Battleship (in Python)
+#+LANGUAGE: en
+#+OPTIONS: toc:t h:4 html-postamble:nil html-preamble:t tex:t f:t
+#+OPTIONS: tags:nil
+# #+OPTIONS: prop:("VERSION")
+#+OPTIONS: broken-links:t
+#+HTML_DOCTYPE: <!DOCTYPE html>
+#+HTML_HEAD: <link href="http://fonts.googleapis.com/css?family=Roboto+Slab:400,700|Inconsolata:400,700" rel="stylesheet" type="text/css" />
+#+HTML_HEAD: <link href="css/style.css" rel="stylesheet" type="text/css" />
+#+AUTHOR: Martín Varela
+#+EMAIL: martin@varela.fi
+
+#+setupfile: ./styles/rto.setup
+#+LINK: gh    https://github.com/
+#+LINK: rfc   https://tools.ietf.org/html/
+#+LINK: thing https://github.com/thi-ng/
+#+LINK: w3    https://w3.org/TR/
+#+LINK: wiki  https://en.wikipedia.org/wiki/
+#+PROPERTY: header-args :eval never-export
+#+TOC: headlines 1 
+
+#+TODO: TODO(t) OPTIONAL(o) | DONE(d) CANCELED(c)
+#+TODO: TESTING(e) BUG(b) | FIXED(f)
+
+#+begin_src emacs-lisp
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (python . t)
+       (jupyter . t)))
+  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                       (:session . "py")
+                                                      (:kernel . "python3")))
+
+    (setq-local org-tangle-root-dir "./battleship")
+    (setq-local org-tangle-on-save t)
+#+end_src
+
+#+RESULTS:
+: ((:async . yes) (:session . py) (:kernel . python3))
+
+
+* Battleship
+
+** Requirements
+   
+   The requirements defined are as follows:
+   
+   - Implement a game of "Battleship" in Python
+   - The play mode is a human player vs an "AI", which should be smarter than simply firing at random positions
+   - The board should be a 10x10 grid
+     - Note: this will be the default, but the API shall be more generic
+   - Each player has 5 ships, of lengths 2, 3, 4 and 5 (with two instances of the ship of length 3)
+     - Note: again, the API will allow for more generality, but the default will be this
+   - Ships can be positioned either vertically or horizontally, and may not overlap
+   - The game proceeds as a sequence of alternating rounds (first player is chosen randomly)
+     - In each round, each player choses a (free) square in the grid to fire at, and is notified of whether the shot hit water, or an enemy's ship.
+     - Once a ship has been hit in all its length, it is sunk.
+   - The game ends when a player sinks all the oponent's ships.
+     
+     
+** Data model
+   - The core of the problem lies in representing the board's state, and its transitions.
+     - The grid itself can be represented as an array of arrays (I guess list of
+       lists in Python's parlance), and within each cell in the grid, we
+       represent the known state, which can be one of the following:
+       - Empty / water (there is no ship here). An empty cell can be revealed as water to the opponent once it's hit.
+       - Ship. This cell corresponds to a ship. The ships themselves do not
+         carry much state, but we can represent them as a =length=, and a set of
+         hits, representing the cells which have been hit, if any. On the board
+         itself, each ship cell could point to an actual =Ship= object
+         containing this data.
+         - For display purposes, and for the AI, we need to distinguish between
+           damaged and non-damaged cells in the ship. This can be inferred from
+           the set of hits in the ship's representation
+     - A set of ships, for easy access to the ships' data (e.g, for determining whether all ships have been sunk)
+     - The game itself consists of two boards, one for each player, and the
+       current state of the AI (that is, the AI will need to remember what it
+       was "currently doing / planning on doing" at the last turn.
+         
+         
+
+*** Board
+     
+    Our board's main feature will be a grid in which we represent the state of
+the game. We can have cells that are either empty, or part of a ship. In
+addition, if the cell has been hit, we can distinguish between water, and a part
+of a ship that's been hit. A simple dictionary would be sufficient to represent
+this information, but in a more OO-friendly way we can implement a simple class
+hierarchy for representing this data, which we can then exploit for rendering
+the board by having each piece =draw= itself. 
+
+#+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/pieces.py"
+  class Piece():
+      def draw(this):
+          return " "
+
+  class EmptyPiece(Piece):
+      def draw(this):
+          return "E"
+
+  class WaterPiece(Piece):
+      def draw(this):
+          return "W"
+
+  class ShipPiece(Piece):
+      def __init__(this, shipId, index):
+          """
+
+          """
+          this.shipId = shipId
+          this.index = index
+      def draw(this):
+          return "S"
+
+  class HitShipPiece(ShipPiece):
+      def draw(this):
+          return "H"
+#+end_src
+
+Coming to our board
+
+#+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/board.py"
+
+  # Our Board class:
+
+  class Board:
+    """Represents the core of our data model: a rectangular grid where we can
+  position ships, fire upon them, and check the status of a grid cell that has
+  been fired upon.
+
+    """
+      def __init__(self, n, m):
+       grid = [[for y]] 
+
+
+
+#+end_src
