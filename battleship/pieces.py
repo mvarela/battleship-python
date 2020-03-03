@@ -2,6 +2,9 @@ class Piece():
     def draw(this):
         return " "
 
+    def isEmpty(this):
+      return true
+
 class EmptyPiece(Piece):
     def draw(this):
         return "E"
@@ -20,6 +23,13 @@ class ShipPiece(Piece):
     def draw(this):
         return "S"
 
+    def isEmpty(this):
+      return false
+
+
 class HitShipPiece(ShipPiece):
     def draw(this):
         return "H"
+
+    def isEmpty(this):
+      return false

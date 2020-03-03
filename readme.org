@@ -22,7 +22,7 @@
 #+TODO: TODO(t) OPTIONAL(o) | DONE(d) CANCELED(c)
 #+TODO: TESTING(e) BUG(b) | FIXED(f)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :exports none
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((emacs-lisp . t)
@@ -37,7 +37,7 @@
 #+end_src
 
 #+RESULTS:
-: ((:async . yes) (:session . py) (:kernel . python3))
+: t
 
 
 * Battleship
@@ -80,7 +80,7 @@
          
          
 
-*** Board
+*** Board and Ships
      
     Our board's main feature will be a grid in which we represent the state of
 the game. We can have cells that are either empty, or part of a ship. In
@@ -88,12 +88,16 @@ addition, if the cell has been hit, we can distinguish between water, and a part
 of a ship that's been hit. A simple dictionary would be sufficient to represent
 this information, but in a more OO-friendly way we can implement a simple class
 hierarchy for representing this data, which we can then exploit for rendering
-the board by having each piece =draw= itself. 
+the board by having each piece =draw= itself. Likewise, we can have each piece
+respond to whether it is empty.
 
 #+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/pieces.py"
   class Piece():
       def draw(this):
           return " "
+
+      def isEmpty(this):
+        return true
 
   class EmptyPiece(Piece):
       def draw(this):
@@ -113,16 +117,29 @@ the board by having each piece =draw= itself.
       def draw(this):
           return "S"
 
+      def isEmpty(this):
+        return false
+
+
   class HitShipPiece(ShipPiece):
       def draw(this):
           return "H"
+
+      def isEmpty(this):
+        return false
 #+end_src
 
-Coming to our board
+Coming to our board, we can now create the basic functionality. We need to:
+- Create a new board, initializing the cells to =EmptyPiece= instances.
+- Check whether we can add a ship, given its orientation and a starting pair of =(x,y)= coordinates
+- Add a ship, given a pair of =(x,y)= coordinates, ship length, and an orientation (provided it can be added)
+- fire at a location
+- inspect a location
 
 #+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/board.py"
 
   # Our Board class:
+  from pieces import *
 
   class Board:
     """Represents the core of our data model: a rectangular grid where we can
@@ -130,9 +147,23 @@ Coming to our board
   been fired upon.
 
     """
-      def __init__(self, n, m):
-       grid = [[for y]] 
+    def __init__(self, width, height):
+      self.height = height
+      self.width = width
+      self.grid = [[EmptyPiece() for y in range(height)] for x in range(width)]
+      self.ships = {}
 
+    def rowString(self, n):
+      if n <= self.height:
+        rowStr = ' | '.join([self.grid[i][n].draw() for i in range(self.width)])
+        return('| ' + rowStr + ' |\n')
+      else:
+        return ''
+
+    def printBoard(self):
+      rows = [self.rowString(i) for i in range(self.height)]
+      for r in rows:
+        print(r)
 
 
 #+end_src
