@@ -1,16 +1,16 @@
 from board import Board, Orientation, FireResult
 from random import choice
 
-class AI:
-    def even(self, n):
+def even(n):
         return 0 == n % 2
 
-    def odd(self, n):
+def odd(n):
         return 1 == n % 2
 
+class AI:
     def checkerboardCoordinates(self):
         """Returns a list of alternating coordinates to target"""
-        coords = [(i, j) for i in range(0, self.width)
+        return [(i, j) for i in range(0, self.width)
                   for j in range(0, self.height)
                   if (even(i) and odd(j)) or (odd(i) and even(j))] 
 
@@ -26,7 +26,7 @@ class AI:
         self.height = board.height
         self.explored = set()
         self.searchingGlobally = True
-        self.remaining = checkerboardCoordinates()
+        self.remaining = self.checkerboardCoordinates()
         self.finished = False
         self.stack = []
 
@@ -35,10 +35,10 @@ class AI:
                      if not(a in self.explored)]
         if len(adjCoords) > 0:
             for a in adjCoords:
-                if a in self.remaining:
-                    self.remaining.remove(a)
-                    self.stack.append(a)
-                    self.searchingGlobally = False
+                self.stack.append(a)
+                self.searchingGlobally = False
+                if(a in self.remaining):
+                        self.remaining.remove(a)
 
     def search(self):
         """Random firing over the remaining checkerboard coordinates"""
@@ -50,7 +50,7 @@ class AI:
         outcome = self.board.fire(x, y)
         self.explored.add(elem)
         if outcome != FireResult.water:
-            addToLocalSearch(x, y)
+            self.addToLocalSearch(x, y)
 
     def handleEmptyStack(self):
         """If the stack becomes empty during the local search, we need
@@ -73,8 +73,9 @@ class AI:
                 self.handleEmptyStack()
                 return
         outcome = self.board.fire(x, y)
+        self.explored.add(elem)
         if outcome != FireResult.water:
-            addToLocalSearch(x, y)
+            self.addToLocalSearch(x, y)
 
 
     def playTurn(self):

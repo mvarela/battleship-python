@@ -84,11 +84,11 @@ been fired upon.
           return False
 
   def fire(self,x,y):
+      result = FireResult.water
       if x < self.width and y < self.height:
           piece = self.grid[x][y]
           if piece.isEmpty():
               self.grid[x][y] = WaterPiece()
-              result = FireResult.water
           else:
               idx = piece.index
               shipId = piece.shipId

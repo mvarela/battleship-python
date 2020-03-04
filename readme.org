@@ -467,11 +467,11 @@ We now define the =fire= method
 
 #+begin_src python :exports code :results silent :eval never :noweb-ref boardFire
   def fire(self,x,y):
+      result = FireResult.water
       if x < self.width and y < self.height:
           piece = self.grid[x][y]
           if piece.isEmpty():
               self.grid[x][y] = WaterPiece()
-              result = FireResult.water
           else:
               idx = piece.index
               shipId = piece.shipId
@@ -616,16 +616,16 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
   from board import Board, Orientation, FireResult
   from random import choice
 
-  class AI:
-      def even(self, n):
+  def even(n):
           return 0 == n % 2
 
-      def odd(self, n):
+  def odd(n):
           return 1 == n % 2
 
+  class AI:
       def checkerboardCoordinates(self):
           """Returns a list of alternating coordinates to target"""
-          coords = [(i, j) for i in range(0, self.width)
+          return [(i, j) for i in range(0, self.width)
                     for j in range(0, self.height)
                     if (even(i) and odd(j)) or (odd(i) and even(j))] 
 
@@ -641,7 +641,7 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
           self.height = board.height
           self.explored = set()
           self.searchingGlobally = True
-          self.remaining = checkerboardCoordinates()
+          self.remaining = self.checkerboardCoordinates()
           self.finished = False
           self.stack = []
 
@@ -650,10 +650,10 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
                        if not(a in self.explored)]
           if len(adjCoords) > 0:
               for a in adjCoords:
-                  if a in self.remaining:
-                      self.remaining.remove(a)
-                      self.stack.append(a)
-                      self.searchingGlobally = False
+                  self.stack.append(a)
+                  self.searchingGlobally = False
+                  if(a in self.remaining):
+                          self.remaining.remove(a)
 
       def search(self):
           """Random firing over the remaining checkerboard coordinates"""
@@ -665,7 +665,7 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
           outcome = self.board.fire(x, y)
           self.explored.add(elem)
           if outcome != FireResult.water:
-              addToLocalSearch(x, y)
+              self.addToLocalSearch(x, y)
 
       def handleEmptyStack(self):
           """If the stack becomes empty during the local search, we need
@@ -688,8 +688,9 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
                   self.handleEmptyStack()
                   return
           outcome = self.board.fire(x, y)
+          self.explored.add(elem)
           if outcome != FireResult.water:
-              addToLocalSearch(x, y)
+              self.addToLocalSearch(x, y)
 
 
       def playTurn(self):
@@ -701,4 +702,33 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
               self.search()
           else:
               self.localSearch()
+#+end_src
+
+The =AI= class has a simple API in the form of =playTurn=. We will exercise it
+via generative testing:
+
+
+#+begin_src python :exports code :results silent :eval never :noweb yes :tangle "battleship/test_ai.py"
+  from board import Board
+  from ai import AI
+  from hypothesis import given, strategies as st
+
+  @given(st.integers(min_value=5, max_value=50))
+  def testCheckerboard(side):
+      b = Board(side, side)
+      ai = AI(b)
+      checkerboard = ai.checkerboardCoordinates()
+      assert(len(checkerboard) == ((side * side) // 2))
+
+  @given(st.data())
+  def testGameCompletion(data):
+      numberOfGames = data.draw(st.integers(min_value=1, max_value=50))
+      for i in range(0, numberOfGames):
+          b = Board(10, 10)
+          b.populate([2, 3, 3, 4, 5])
+          ai = AI(b)
+          while not ai.finished:
+              ai.playTurn()
+          assert(all([b.ships[k].isSunk() for k in b.ships.keys()]))
+
 #+end_src
