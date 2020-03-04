@@ -1,0 +1,2 @@
+Hypothesis==5.6.0
+Pytest==5.3.5

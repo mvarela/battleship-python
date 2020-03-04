@@ -78,8 +78,20 @@
        current state of the AI (that is, the AI will need to remember what it
        was "currently doing / planning on doing" at the last turn.
          
-         
+        
+*** Setup
+    
+#+begin_src jupyter-python :exports code :results silent :eval never :tangle "setup.py"
+from setuptools import setup
 
+setup(name='battleship',
+      version = '0.1',
+      description = 'Battleship clone',
+      author = 'Martín Varela',
+      author_email = 'martin@varela.fi',
+      packages = ['battleship'],
+      zip_safe = False)
+#+end_src
 *** Board and Ships
      
     Our board's main feature will be a grid in which we represent the state of
@@ -97,7 +109,7 @@ respond to whether it is empty.
           return " "
 
       def isEmpty(this):
-        return true
+        return True
 
   class EmptyPiece(Piece):
       def draw(this):
@@ -118,7 +130,7 @@ respond to whether it is empty.
           return "S"
 
       def isEmpty(this):
-        return false
+        return False
 
 
   class HitShipPiece(ShipPiece):
@@ -126,7 +138,7 @@ respond to whether it is empty.
           return "H"
 
       def isEmpty(this):
-        return false
+        return False
 #+end_src
 
 Coming to our board, we can now create the basic functionality. We need to:
@@ -136,10 +148,19 @@ Coming to our board, we can now create the basic functionality. We need to:
 - fire at a location
 - inspect a location
 
-#+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/board.py"
+#+begin_src python :exports code :results silent :eval never :tangle "battleship/board.py" :noweb yes
 
   # Our Board class:
-  from pieces import *
+  from pieces import (EmptyPiece, WaterPiece,
+                      ShipPiece, HitShipPiece)
+  from enum import Enum
+  <<shipImport>>
+
+
+  class Orientation(Enum):
+     horizontal = 0
+     vertical = 1
+
 
   class Board:
     """Represents the core of our data model: a rectangular grid where we can
@@ -164,6 +185,140 @@ Coming to our board, we can now create the basic functionality. We need to:
       rows = [self.rowString(i) for i in range(self.height)]
       for r in rows:
         print(r)
+
+    <<canAdd>>
+  
+    <<addShip>>
+#+end_src
+
+The first thing to do is add functionality for adding a ship. This requires both
+checking whether a ship of a given size can be placed at a certain =(x,y)=
+position with the given orientation, and actually adding the ship in place.
+We'll keep the ships' state in a =dict= object in the board, and the
+corresponding =piece= objects on the grid can reference the ship's =id= for
+accessing ship state as necessary.
+
+#+begin_src python :exports code :results silent :eval never :noweb-ref canAdd
+  def positions(self, x, y, length, orientation):
+     """Auxiliary function to return the coordinates occupied by adding a ship"""
+     xEnd = x
+     yEnd = y
+     if(orientation == Orientation.horizontal):
+        xEnd = x + length
+     else:
+        yEnd = y + length
+
+     if xEnd >= self.width or yEnd >= self.height:
+         return False
+     else:
+        if orientation == Orientation.horizontal:
+           return [(i,y) for i in range(x, xEnd)]
+        else:
+           return [(x,j) for j in range(y, yEnd)]
+
+  def canAdd(self, x, y, length, orientation):
+     positions = self.positions(x, y, length, orientation)
+     if positions:
+        cells = [self.grid[x][y].isEmpty() for (x,y) in positions]
+        return all(cells)
+     else:
+        return False
+#+end_src
+
+We can now add ships, but of course for that we need to represent them, first:
+
+#+begin_src python :exports code :results silent :eval never :tangle "battleship/ship.py" :noweb yes
+  class Ship:
+      def __init__(self, length):
+          self.length = length
+          self.hits = set()
+
+      def hit(index):
+          """ Register a hit at position `index`"""
+          if index <= length:
+              self.hits.add(index)
+
+      def isSunk():
+          """True if the ship is sunk"""
+          return len(self.hits) == self.length
+#+end_src
+
+With our =Ship= definition at hand, we can now do:
+
+
+#+begin_src python :exports code :results silent :eval never :noweb-ref shipImport
+  from ship import Ship
+  from uuid import uuid4
+#+end_src
+
+
+
+#+begin_src python :exports code :results silent :eval never :noweb-ref addShip
+  def addShip(self, x, y, length, orientation):
+      if self.canAdd(x, y, length, orientation):
+          ship = Ship(length)
+          coords = self.positions(x, y, length, orientation)
+          id = uuid4()
+          self.ships[id] = ship
+          for idx, (i, j) in enumerate(coords):
+              self.grid[i][j] = ShipPiece(id, idx)
+          return True
+#+end_src
+
+
+Now it would be a good time to do some basic testing for the functionality we
+have. We will use property-based testing, using =Hypothesis=. 
+
+We add it to our dependencies:
+#+begin_src sh :exports code :results silent :eval never :noweb yes :tangle "requirements.txt"
+  Hypothesis==5.6.0
+  Pytest==5.3.5
+#+end_src
+
+And install it:
+#+begin_src sh :exports both :results output 
+pip3 install -r requirements.txt
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Collecting Hypothesis==5.6.0 (from -r requirements.txt (line 1))
+  Using cached https://files.pythonhosted.org/packages/51/19/0c2931f0ab4da3ac0720a36538515597090178731f74b2c8832a2032687a/hypothesis-5.6.0-py3-none-any.whl
+Collecting Pytest==5.3.5 (from -r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/a5/c0/34033b2df7718b91c667bd259d5ce632ec3720198b7068c0ba6f6104ff89/pytest-5.3.5-py3-none-any.whl (235kB)
+Collecting sortedcontainers<3.0.0,>=2.1.0 (from Hypothesis==5.6.0->-r requirements.txt (line 1))
+  Using cached https://files.pythonhosted.org/packages/13/f3/cf85f7c3a2dbd1a515d51e1f1676d971abe41bba6f4ab5443240d9a78e5b/sortedcontainers-2.1.0-py2.py3-none-any.whl
+Collecting attrs>=19.2.0 (from Hypothesis==5.6.0->-r requirements.txt (line 1))
+  Using cached https://files.pythonhosted.org/packages/a2/db/4313ab3be961f7a763066401fb77f7748373b6094076ae2bda2806988af6/attrs-19.3.0-py2.py3-none-any.whl
+Collecting pluggy<1.0,>=0.12 (from Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/a0/28/85c7aa31b80d150b772fbe4a229487bc6644da9ccb7e427dd8cc60cb8a62/pluggy-0.13.1-py2.py3-none-any.whl
+Collecting py>=1.5.0 (from Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/99/8d/21e1767c009211a62a8e3067280bfce76e89c9f876180308515942304d2d/py-1.8.1-py2.py3-none-any.whl (83kB)
+Collecting importlib-metadata>=0.12; python_version < "3.8" (from Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/8b/03/a00d504808808912751e64ccf414be53c29cad620e3de2421135fcae3025/importlib_metadata-1.5.0-py2.py3-none-any.whl
+Collecting more-itertools>=4.0.0 (from Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/72/96/4297306cc270eef1e3461da034a3bebe7c84eff052326b130824e98fc3fb/more_itertools-8.2.0-py3-none-any.whl (43kB)
+Collecting wcwidth (from Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/58/b4/4850a0ccc6f567cc0ebe7060d20ffd4258b8210efadc259da62dc6ed9c65/wcwidth-0.1.8-py2.py3-none-any.whl
+Collecting packaging (from Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/98/42/87c585dd3b113c775e65fd6b8d9d0a43abe1819c471d7af702d4e01e9b20/packaging-20.1-py2.py3-none-any.whl
+Collecting zipp>=0.5 (from importlib-metadata>=0.12; python_version < "3.8"->Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/b2/34/bfcb43cc0ba81f527bc4f40ef41ba2ff4080e047acb0586b56b3d017ace4/zipp-3.1.0-py3-none-any.whl
+Collecting six (from packaging->Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/65/eb/1f97cb97bfc2390a276969c6fae16075da282f5058082d4cb10c6c5c1dba/six-1.14.0-py2.py3-none-any.whl
+Collecting pyparsing>=2.0.2 (from packaging->Pytest==5.3.5->-r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/5d/bc/1e58593167fade7b544bfe9502a26dc860940a79ab306e651e7f13be68c2/pyparsing-2.4.6-py2.py3-none-any.whl (67kB)
+Installing collected packages: sortedcontainers, attrs, Hypothesis, zipp, importlib-metadata, pluggy, py, more-itertools, wcwidth, six, pyparsing, packaging, Pytest
+Successfully installed Hypothesis-5.6.0 Pytest-5.3.5 attrs-19.3.0 importlib-metadata-1.5.0 more-itertools-8.2.0 packaging-20.1 pluggy-0.13.1 py-1.8.1 pyparsing-2.4.6 six-1.14.0 sortedcontainers-2.1.0 wcwidth-0.1.8 zipp-3.1.0
+#+end_example
+
+
+#+begin_src python :exports code :results silent :eval never :tangle "battleship/test_board.py" :noweb yes
+  from board import Board
+  from ship import Ship
+  from pieces import (EmptyPiece, WaterPiece,
+                      ShipPiece, HitShipPiece)
+  from hypothesis import given, strategies as st
 
 
 #+end_src

@@ -3,7 +3,7 @@ class Piece():
         return " "
 
     def isEmpty(this):
-      return true
+      return True
 
 class EmptyPiece(Piece):
     def draw(this):
@@ -24,7 +24,7 @@ class ShipPiece(Piece):
         return "S"
 
     def isEmpty(this):
-      return false
+      return False
 
 
 class HitShipPiece(ShipPiece):
@@ -32,4 +32,4 @@ class HitShipPiece(ShipPiece):
         return "H"
 
     def isEmpty(this):
-      return false
+      return False
