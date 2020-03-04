@@ -1,16 +1,15 @@
 class Piece():
-    def draw(this):
+    def draw(this, opponentView = False):
         return " "
 
     def isEmpty(this):
       return True
 
 class EmptyPiece(Piece):
-    def draw(this):
-        return "E"
+    pass
 
 class WaterPiece(Piece):
-    def draw(this):
+    def draw(this, opponentView = False):
         return "W"
 
 class ShipPiece(Piece):
@@ -20,15 +19,18 @@ class ShipPiece(Piece):
         """
         this.shipId = shipId
         this.index = index
-    def draw(this):
-        return "S"
+    def draw(this, opponentView = False):
+        if opponentView:
+            return " "
+        else:
+            return "S"
 
     def isEmpty(this):
       return False
 
 
 class HitShipPiece(ShipPiece):
-    def draw(this):
+    def draw(this, opponentView = False):
         return "H"
 
     def isEmpty(this):
