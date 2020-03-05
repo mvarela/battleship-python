@@ -11,7 +11,6 @@ class Turn(Enum):
 class Game:
     def __init__(self, boardSize = 10, fleet = [2, 3, 3, 4, 5]):
         self.playerBoard = Board(boardSize, boardSize)
-        print(boardSize)
         self.aiBoard = Board(boardSize, boardSize)
         self.aiBoard.populate(fleet)
         self.ai = AI(self.playerBoard)

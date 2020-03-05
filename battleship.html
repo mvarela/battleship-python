@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2020-03-05 to 12:31 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battleship (in Python)</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Martín Varela">
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link href="http://fonts.googleapis.com/css?family=Roboto+Slab:400,700|Inconsolata:400,700" rel="stylesheet" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="styles/readtheorg/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="styles/readtheorg/css/readtheorg.css"/>
+<link rel="stylesheet" type="text/css" href="styles/zenburn.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="styles/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="styles/readtheorg/js/readtheorg.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Battleship (in Python)</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgcbb2531">1. Battleship</a>
+<ul>
+<li><a href="#org2d3af24">1.1. Requirements</a></li>
+<li><a href="#org4aa33fb">1.2. Data Model &amp; Implementation</a>
+<ul>
+<li><a href="#org44f95d1">1.2.1. Setup</a></li>
+<li><a href="#org82a5f68">1.2.2. Board and Ships</a></li>
+<li><a href="#org76b10fa">1.2.3. AI</a></li>
+<li><a href="#org86ea91d">1.2.4. The Game</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgcbb2531">1. Battleship</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgcbb2531" class="outline-2">
+<h2 id="orgcbb2531"><span class="section-number-2">1</span> Battleship</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org2d3af24" class="outline-3">
+<h3 id="org2d3af24"><span class="section-number-3">1.1</span> Requirements</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+The requirements defined are as follows:
+</p>
+
+<ul class="org-ul">
+<li>Implement a game of "Battleship" in Python</li>
+<li>The play mode is a human player vs an "AI", which should be smarter than simply firing at random positions</li>
+<li>The board should be a 10x10 grid
+<ul class="org-ul">
+<li>Note: this will be the default, but the API shall be more generic</li>
+</ul></li>
+<li>Each player has 5 ships, of lengths 2, 3, 4 and 5 (with two instances of the ship of length 3)
+<ul class="org-ul">
+<li>Note: again, the API will allow for more generality, but the default will be this</li>
+</ul></li>
+<li>Ships can be positioned either vertically or horizontally, and may not overlap</li>
+<li>The game proceeds as a sequence of alternating rounds (first player is chosen randomly)
+<ul class="org-ul">
+<li>In each round, each player choses a (free) square in the grid to fire at, and is notified of whether the shot hit water, or an enemy's ship.</li>
+<li>Once a ship has been hit in all its length, it is sunk.</li>
+</ul></li>
+<li>The game ends when a player sinks all the oponent's ships.</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org4aa33fb" class="outline-3">
+<h3 id="org4aa33fb"><span class="section-number-3">1.2</span> Data Model &amp; Implementation</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li>The core of the problem lies in representing the board's state, and its transitions.
+<ul class="org-ul">
+<li>The grid itself can be represented as an array of arrays (I guess list of
+lists in Python's parlance), and within each cell in the grid, we
+represent the known state, which can be one of the following:
+<ul class="org-ul">
+<li>Empty / water (there is no ship here). An empty cell can be revealed as water to the opponent once it's hit.</li>
+<li>Ship. This cell corresponds to a ship. The ships themselves do not
+carry much state, but we can represent them as a <code>length</code>, and a set of
+hits, representing the cells which have been hit, if any. On the board
+itself, each ship cell could point to an actual <code>Ship</code> object
+containing this data.
+<ul class="org-ul">
+<li>For display purposes, and for the AI, we need to distinguish between
+damaged and non-damaged cells in the ship. This can be inferred from
+the set of hits in the ship's representation</li>
+</ul></li>
+</ul></li>
+<li>A set of ships, for easy access to the ships' data (e.g, for determining whether all ships have been sunk)</li>
+<li>The game itself consists of two boards, one for each player, and the
+current state of the AI (that is, the AI will need to remember what it
+was "currently doing / planning on doing" at the last turn.</li>
+</ul></li>
+</ul>
+</div>
+
+<div id="outline-container-org44f95d1" class="outline-4">
+<h4 id="org44f95d1"><span class="section-number-4">1.2.1</span> Setup</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> setuptools <span style="color: #F0DFAF; font-weight: bold;">import</span> setup
+
+setup<span style="color: #dedded;">(</span>name=<span style="color: #DCA3A3;">'battleship'</span>,
+      version = <span style="color: #DCA3A3;">'0.1'</span>,
+      description = <span style="color: #DCA3A3;">'Battleship clone'</span>,
+      author = <span style="color: #DCA3A3;">'Mart&#237;n Varela'</span>,
+      author_email = <span style="color: #DCA3A3;">'martin@varela.fi'</span>,
+      packages = <span style="color: #BFEBBF;">[</span><span style="color: #DCA3A3;">'battleship'</span><span style="color: #BFEBBF;">]</span>,
+      zip_safe = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>
+</pre>
+</div>
+
+<p>
+We initialize the module
+</p>
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.board  <span style="color: #F0DFAF; font-weight: bold;">import</span> *
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.pieces <span style="color: #F0DFAF; font-weight: bold;">import</span> *
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.ship   <span style="color: #F0DFAF; font-weight: bold;">import</span> *
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.ai     <span style="color: #F0DFAF; font-weight: bold;">import</span> *
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.game   <span style="color: #F0DFAF; font-weight: bold;">import</span> *
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.cli    <span style="color: #F0DFAF; font-weight: bold;">import</span> *
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org82a5f68" class="outline-4">
+<h4 id="org82a5f68"><span class="section-number-4">1.2.2</span> Board and Ships</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<p>
+    Our board's main feature will be a grid in which we represent the state of
+the game. We can have cells that are either empty, or part of a ship. In
+addition, if the cell has been hit, we can distinguish between water, and a part
+of a ship that's been hit. A simple dictionary would be sufficient to represent
+this information, but in a more OO-friendly way we can implement a simple class
+hierarchy for representing this data, which we can then exploit for rendering
+the board by having each piece <code>draw</code> itself. Likewise, we can have each piece
+respond to whether it is empty.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">Piece</span><span style="color: #dedded;">()</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">draw</span><span style="color: #dedded;">(</span>this, opponentView = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #DCA3A3;">" "</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">isEmpty</span><span style="color: #dedded;">(</span>this<span style="color: #dedded;">)</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">True</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">EmptyPiece</span><span style="color: #dedded;">(</span>Piece<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">pass</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">WaterPiece</span><span style="color: #dedded;">(</span>Piece<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">draw</span><span style="color: #dedded;">(</span>this, opponentView = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #DCA3A3;">"W"</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">ShipPiece</span><span style="color: #dedded;">(</span>Piece<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span>this, shipId, index<span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">"""</span>
+
+<span style="color: #9796c4;">        """</span>
+        <span style="color: #E0CF9F;">this.shipId</span> = shipId
+        <span style="color: #E0CF9F;">this.index</span> = index
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">draw</span><span style="color: #dedded;">(</span>this, opponentView = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> opponentView:
+            <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #DCA3A3;">" "</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #DCA3A3;">"S"</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">isEmpty</span><span style="color: #dedded;">(</span>this<span style="color: #dedded;">)</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">HitShipPiece</span><span style="color: #dedded;">(</span>ShipPiece<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">draw</span><span style="color: #dedded;">(</span>this, opponentView = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #DCA3A3;">"H"</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">isEmpty</span><span style="color: #dedded;">(</span>this<span style="color: #dedded;">)</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+</pre>
+</div>
+
+<p>
+Coming to our board, we can now create the basic functionality. We need to:
+</p>
+<ul class="org-ul">
+<li>Create a new board, initializing the cells to <code>EmptyPiece</code> instances.</li>
+<li>Check whether we can add a ship, given its orientation and a starting pair of <code>(x,y)</code> coordinates</li>
+<li>Add a ship, given a pair of <code>(x,y)</code> coordinates, ship length, and an orientation (provided it can be added)</li>
+<li>Fire at a location</li>
+<li>Check whether the board is "lost" (that is, all ships have been sunk)</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.pieces <span style="color: #F0DFAF; font-weight: bold;">import</span> <span style="color: #dedded;">(</span>EmptyPiece, WaterPiece,
+             ShipPiece, HitShipPiece<span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">from</span> enum <span style="color: #F0DFAF; font-weight: bold;">import</span> Enum
+<span style="color: #F0DFAF; font-weight: bold;">from</span> random <span style="color: #F0DFAF; font-weight: bold;">import</span> choice, randint
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.ship <span style="color: #F0DFAF; font-weight: bold;">import</span> Ship
+<span style="color: #F0DFAF; font-weight: bold;">from</span> uuid <span style="color: #F0DFAF; font-weight: bold;">import</span> uuid4
+
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">Orientation</span><span style="color: #dedded;">(</span>Enum<span style="color: #dedded;">)</span>:
+   <span style="color: #E0CF9F;">horizontal</span> = <span style="color: #9796c4;">0</span>
+   <span style="color: #E0CF9F;">vertical</span> = <span style="color: #9796c4;">1</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">FireResult</span><span style="color: #dedded;">(</span>Enum<span style="color: #dedded;">)</span>:
+    <span style="color: #E0CF9F;">water</span> = <span style="color: #9796c4;">0</span>
+    <span style="color: #E0CF9F;">hit</span> = <span style="color: #9796c4;">1</span>
+    <span style="color: #E0CF9F;">sunk</span> = <span style="color: #9796c4;">2</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">Board</span>:
+  <span style="color: #9796c4;">"""Represents the core of our data model: a rectangular grid where we can</span>
+<span style="color: #9796c4;">position ships, fire upon them, and check the status of a grid cell that has</span>
+<span style="color: #9796c4;">been fired upon.</span>
+
+<span style="color: #9796c4;">  """</span>
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, width, height<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">self</span>.height = height
+    <span style="color: #F0DFAF; font-weight: bold;">self</span>.width = width
+    <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">[</span>EmptyPiece<span style="color: #D0BF8F;">()</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> y <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span>height<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">]</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> x <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>width<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+    <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships = <span style="color: #dedded;">{}</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">rowString</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, n, opponentView = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> n &lt;= <span style="color: #F0DFAF; font-weight: bold;">self</span>.height:
+      <span style="color: #E0CF9F;">rowStr</span> = <span style="color: #DCA3A3;">' | '</span>.join<span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #D0BF8F;">[</span>i<span style="color: #D0BF8F;">][</span>n<span style="color: #D0BF8F;">]</span>.draw<span style="color: #D0BF8F;">(</span>opponentView<span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.width<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+      <span style="color: #F0DFAF; font-weight: bold;">return</span><span style="color: #dedded;">(</span><span style="color: #DCA3A3;">'| '</span> + rowStr + <span style="color: #DCA3A3;">' |'</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #DCA3A3;">''</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">printBoard</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, opponentView = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>:
+    <span style="color: #E0CF9F;">rows</span> = <span style="color: #dedded;">[</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.rowString<span style="color: #BFEBBF;">(</span>i, opponentView<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.height<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+    <span style="color: #E0CF9F;">header</span> = <span style="color: #DCA3A3;">'  '</span> + <span style="color: #DCA3A3;">'| '</span>  + <span style="color: #DCA3A3;">' | '</span>.join<span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #DCA3A3;">'%s'</span> %i <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span><span style="color: #9796c4;">0</span>,<span style="color: #F0DFAF; font-weight: bold;">self</span>.width<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span> + <span style="color: #DCA3A3;">' |'</span>
+    <span style="color: #E0CF9F;">hsep</span> =  <span style="color: #DCA3A3;">''</span>.join<span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #DCA3A3;">'_'</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span><span style="color: #9796c4;">0</span>, <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #a7a6d4;">(</span>header<span style="color: #a7a6d4;">)</span><span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span> 
+    <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span>header<span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span>hsep<span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> idx, r <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">enumerate</span><span style="color: #dedded;">(</span>rows<span style="color: #dedded;">)</span>:
+      <span style="color: #888389; background-color: #484349;"># </span><span style="color: #888389; background-color: #484349;">we ommit the index string padding for simplicity, since it'll be &lt;10 in the game</span>
+      <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">str</span><span style="color: #BFEBBF;">(</span>idx<span style="color: #BFEBBF;">)</span> + <span style="color: #DCA3A3;">' '</span> +r<span style="color: #dedded;">)</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">positions</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y, length, orientation<span style="color: #dedded;">)</span>:
+     <span style="color: #9796c4;">"""Auxiliary function to return the coordinates occupied by adding a ship"""</span>
+     <span style="color: #F0DFAF; font-weight: bold;">if</span> x &lt; <span style="color: #9796c4;">0</span> <span style="color: #F0DFAF; font-weight: bold;">or</span> y &lt; <span style="color: #9796c4;">0</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+     <span style="color: #E0CF9F;">xEnd</span> = x
+     <span style="color: #E0CF9F;">yEnd</span> = y
+     <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span>orientation == Orientation.horizontal<span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">xEnd</span> = x + length
+     <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+        <span style="color: #E0CF9F;">yEnd</span> = y + length
+
+     <span style="color: #F0DFAF; font-weight: bold;">if</span> xEnd &gt;= <span style="color: #F0DFAF; font-weight: bold;">self</span>.width <span style="color: #F0DFAF; font-weight: bold;">or</span> yEnd &gt;= <span style="color: #F0DFAF; font-weight: bold;">self</span>.height:
+         <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+     <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.horizontal:
+           <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i,y<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>x, xEnd<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+           <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>x,j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>y, yEnd<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">canAdd</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y, length, orientation<span style="color: #dedded;">)</span>:
+     <span style="color: #E0CF9F;">positions</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.positions<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+     <span style="color: #F0DFAF; font-weight: bold;">if</span> positions:
+        <span style="color: #E0CF9F;">cells</span> = <span style="color: #dedded;">[</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #BFEBBF;">[</span>x<span style="color: #BFEBBF;">][</span>y<span style="color: #BFEBBF;">]</span>.isEmpty<span style="color: #BFEBBF;">()</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span>x,y<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> positions<span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #aeadbd; font-weight: bold;">all</span><span style="color: #dedded;">(</span>cells<span style="color: #dedded;">)</span>
+     <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">addShip</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y, length, orientation<span style="color: #dedded;">)</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.canAdd<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>:
+          <span style="color: #E0CF9F;">ship</span> = Ship<span style="color: #dedded;">(</span>length<span style="color: #dedded;">)</span>
+          <span style="color: #E0CF9F;">coords</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.positions<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+          <span style="color: #aeadbd; font-weight: bold;">id</span> = uuid4<span style="color: #dedded;">()</span>
+          <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #dedded;">[</span><span style="color: #aeadbd; font-weight: bold;">id</span><span style="color: #dedded;">]</span> = ship
+          <span style="color: #F0DFAF; font-weight: bold;">for</span> idx, <span style="color: #dedded;">(</span>i, j<span style="color: #dedded;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">enumerate</span><span style="color: #dedded;">(</span>coords<span style="color: #dedded;">)</span>:
+              <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>i<span style="color: #dedded;">][</span>j<span style="color: #dedded;">]</span> = ShipPiece<span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">id</span>, idx<span style="color: #dedded;">)</span>
+          <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">True</span>
+      <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+          <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">fire</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>,x,y<span style="color: #dedded;">)</span>:
+      <span style="color: #E0CF9F;">result</span> = FireResult.water
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> x &lt; <span style="color: #F0DFAF; font-weight: bold;">self</span>.width <span style="color: #F0DFAF; font-weight: bold;">and</span> y &lt; <span style="color: #F0DFAF; font-weight: bold;">self</span>.height:
+          <span style="color: #E0CF9F;">piece</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>x<span style="color: #dedded;">][</span>y<span style="color: #dedded;">]</span>
+          <span style="color: #F0DFAF; font-weight: bold;">if</span> piece.isEmpty<span style="color: #dedded;">()</span>:
+              <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>x<span style="color: #dedded;">][</span>y<span style="color: #dedded;">]</span> = WaterPiece<span style="color: #dedded;">()</span>
+          <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+              <span style="color: #E0CF9F;">idx</span> = piece.index
+              <span style="color: #E0CF9F;">shipId</span> = piece.shipId
+              <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #dedded;">[</span>shipId<span style="color: #dedded;">]</span>.hit<span style="color: #dedded;">(</span>idx<span style="color: #dedded;">)</span>
+              <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>x<span style="color: #dedded;">][</span>y<span style="color: #dedded;">]</span> = HitShipPiece<span style="color: #dedded;">(</span>shipId, idx<span style="color: #dedded;">)</span>
+              <span style="color: #E0CF9F;">result</span> = FireResult.hit
+              <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #dedded;">[</span>shipId<span style="color: #dedded;">]</span>.isSunk<span style="color: #dedded;">()</span>:
+                  <span style="color: #E0CF9F;">result</span> = FireResult.sunk
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> result
+
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">populate</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, sizes<span style="color: #dedded;">)</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">for</span> s <span style="color: #F0DFAF; font-weight: bold;">in</span> sizes:
+          <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">False</span>
+          <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> done:
+              <span style="color: #E0CF9F;">orientation</span> = choice<span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">list</span><span style="color: #BFEBBF;">(</span>Orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+              <span style="color: #E0CF9F;">maxX</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.vertical <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - s
+              <span style="color: #E0CF9F;">maxY</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.horizontal <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - s
+              <span style="color: #E0CF9F;">x</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxX<span style="color: #dedded;">)</span>
+              <span style="color: #E0CF9F;">y</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxY<span style="color: #dedded;">)</span>
+              <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.canAdd<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>:
+                  <span style="color: #F0DFAF; font-weight: bold;">self</span>.addShip<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>
+                  <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">True</span>
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">populate</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, sizes<span style="color: #dedded;">)</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">for</span> s <span style="color: #F0DFAF; font-weight: bold;">in</span> sizes:
+          <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">False</span>
+          <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> done:
+              <span style="color: #E0CF9F;">orientation</span> = choice<span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">list</span><span style="color: #BFEBBF;">(</span>Orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+              <span style="color: #E0CF9F;">maxX</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.vertical <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - s
+              <span style="color: #E0CF9F;">maxY</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.horizontal <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - s
+              <span style="color: #E0CF9F;">x</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxX<span style="color: #dedded;">)</span>
+              <span style="color: #E0CF9F;">y</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxY<span style="color: #dedded;">)</span>
+              <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.canAdd<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>:
+                  <span style="color: #F0DFAF; font-weight: bold;">self</span>.addShip<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>
+                  <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">True</span>
+
+  <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">hasLost</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #aeadbd; font-weight: bold;">all</span><span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #D0BF8F;">[</span>k<span style="color: #D0BF8F;">]</span>.isSunk<span style="color: #D0BF8F;">()</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> k <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships.keys<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+
+</pre>
+</div>
+
+<p>
+The first thing to do is add functionality for adding a ship. This requires both
+checking whether a ship of a given size can be placed at a certain <code>(x,y)</code>
+position with the given orientation, and actually adding the ship in place.
+We'll keep the ships' state in a <code>dict</code> object in the board, and the
+corresponding <code>piece</code> objects on the grid can reference the ship's <code>id</code> for
+accessing ship state as necessary.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">positions</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y, length, orientation<span style="color: #dedded;">)</span>:
+   <span style="color: #9796c4;">"""Auxiliary function to return the coordinates occupied by adding a ship"""</span>
+   <span style="color: #F0DFAF; font-weight: bold;">if</span> x &lt; <span style="color: #9796c4;">0</span> <span style="color: #F0DFAF; font-weight: bold;">or</span> y &lt; <span style="color: #9796c4;">0</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+   <span style="color: #E0CF9F;">xEnd</span> = x
+   <span style="color: #E0CF9F;">yEnd</span> = y
+   <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span>orientation == Orientation.horizontal<span style="color: #dedded;">)</span>:
+      <span style="color: #E0CF9F;">xEnd</span> = x + length
+   <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+      <span style="color: #E0CF9F;">yEnd</span> = y + length
+
+   <span style="color: #F0DFAF; font-weight: bold;">if</span> xEnd &gt;= <span style="color: #F0DFAF; font-weight: bold;">self</span>.width <span style="color: #F0DFAF; font-weight: bold;">or</span> yEnd &gt;= <span style="color: #F0DFAF; font-weight: bold;">self</span>.height:
+       <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+   <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.horizontal:
+         <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i,y<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>x, xEnd<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+      <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+         <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>x,j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>y, yEnd<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">canAdd</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y, length, orientation<span style="color: #dedded;">)</span>:
+   <span style="color: #E0CF9F;">positions</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.positions<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+   <span style="color: #F0DFAF; font-weight: bold;">if</span> positions:
+      <span style="color: #E0CF9F;">cells</span> = <span style="color: #dedded;">[</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #BFEBBF;">[</span>x<span style="color: #BFEBBF;">][</span>y<span style="color: #BFEBBF;">]</span>.isEmpty<span style="color: #BFEBBF;">()</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span>x,y<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> positions<span style="color: #dedded;">]</span>
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #aeadbd; font-weight: bold;">all</span><span style="color: #dedded;">(</span>cells<span style="color: #dedded;">)</span>
+   <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+</pre>
+</div>
+
+<p>
+We can now add ships, but of course for that we need to represent them, first:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">Ship</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, length<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.length = length
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.hits = <span style="color: #aeadbd; font-weight: bold;">set</span><span style="color: #dedded;">()</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">hit</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, index<span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">""" Register a hit at position `index`"""</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> index &lt;= <span style="color: #F0DFAF; font-weight: bold;">self</span>.length:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.hits.add<span style="color: #dedded;">(</span>index<span style="color: #dedded;">)</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">isSunk</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">"""True if the ship is sunk"""</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.hits<span style="color: #dedded;">)</span> == <span style="color: #F0DFAF; font-weight: bold;">self</span>.length
+</pre>
+</div>
+
+<p>
+With our <code>Ship</code> definition at hand, we can now do:
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.ship <span style="color: #F0DFAF; font-weight: bold;">import</span> Ship
+<span style="color: #F0DFAF; font-weight: bold;">from</span> uuid <span style="color: #F0DFAF; font-weight: bold;">import</span> uuid4
+</pre>
+</div>
+
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">addShip</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y, length, orientation<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.canAdd<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">ship</span> = Ship<span style="color: #dedded;">(</span>length<span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">coords</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.positions<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+        <span style="color: #aeadbd; font-weight: bold;">id</span> = uuid4<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #dedded;">[</span><span style="color: #aeadbd; font-weight: bold;">id</span><span style="color: #dedded;">]</span> = ship
+        <span style="color: #F0DFAF; font-weight: bold;">for</span> idx, <span style="color: #dedded;">(</span>i, j<span style="color: #dedded;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">enumerate</span><span style="color: #dedded;">(</span>coords<span style="color: #dedded;">)</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>i<span style="color: #dedded;">][</span>j<span style="color: #dedded;">]</span> = ShipPiece<span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">id</span>, idx<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">True</span>
+    <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+</pre>
+</div>
+
+
+<p>
+Now it would be a good time to do some basic testing for the functionality we
+have. We will use property-based testing, using <code>Hypothesis</code>. 
+</p>
+
+<p>
+We add it to our dependencies:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #E0CF9F;">Hypothesis</span>==<span style="color: #9796c4;">5.6.0</span>
+<span style="color: #E0CF9F;">Pytest</span>==<span style="color: #9796c4;">5.3.5</span>
+Pytest-cov==<span style="color: #9796c4;">2.8.1</span>
+</pre>
+</div>
+
+<p>
+And install it:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">pip3 install -r requirements.txt
+</pre>
+</div>
+
+<pre class="example">
+Collecting Hypothesis==5.6.0 (from -r requirements.txt (line 1))
+  Using cached https://files.pythonhosted.org/packages/51/19/0c2931f0ab4da3ac0720a36538515597090178731f74b2c8832a2032687a/hypothesis-5.6.0-py3-none-any.whl
+Collecting Pytest==5.3.5 (from -r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/a5/c0/34033b2df7718b91c667bd259d5ce632ec3720198b7068c0ba6f6104ff89/pytest-5.3.5-py3-none-any.whl
+Collecting Pytest-cov==2.8.1 (from -r requirements.txt (line 3))
+  Downloading https://files.pythonhosted.org/packages/b9/54/3673ee8be482f81527678ac894276223b9814bb7262e4f730469bb7bf70e/pytest_cov-2.8.1-py2.py3-none-any.whl
+Collecting sortedcontainers&lt;3.0.0,&gt;=2.1.0 (from Hypothesis==5.6.0-&gt;-r requirements.txt (line 1))
+  Using cached https://files.pythonhosted.org/packages/13/f3/cf85f7c3a2dbd1a515d51e1f1676d971abe41bba6f4ab5443240d9a78e5b/sortedcontainers-2.1.0-py2.py3-none-any.whl
+Collecting attrs&gt;=19.2.0 (from Hypothesis==5.6.0-&gt;-r requirements.txt (line 1))
+  Using cached https://files.pythonhosted.org/packages/a2/db/4313ab3be961f7a763066401fb77f7748373b6094076ae2bda2806988af6/attrs-19.3.0-py2.py3-none-any.whl
+Collecting py&gt;=1.5.0 (from Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/99/8d/21e1767c009211a62a8e3067280bfce76e89c9f876180308515942304d2d/py-1.8.1-py2.py3-none-any.whl
+Collecting more-itertools&gt;=4.0.0 (from Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/72/96/4297306cc270eef1e3461da034a3bebe7c84eff052326b130824e98fc3fb/more_itertools-8.2.0-py3-none-any.whl
+Collecting packaging (from Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/98/42/87c585dd3b113c775e65fd6b8d9d0a43abe1819c471d7af702d4e01e9b20/packaging-20.1-py2.py3-none-any.whl
+Collecting importlib-metadata&gt;=0.12; python_version &lt; "3.8" (from Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/8b/03/a00d504808808912751e64ccf414be53c29cad620e3de2421135fcae3025/importlib_metadata-1.5.0-py2.py3-none-any.whl
+Collecting pluggy&lt;1.0,&gt;=0.12 (from Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/a0/28/85c7aa31b80d150b772fbe4a229487bc6644da9ccb7e427dd8cc60cb8a62/pluggy-0.13.1-py2.py3-none-any.whl
+Collecting wcwidth (from Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/58/b4/4850a0ccc6f567cc0ebe7060d20ffd4258b8210efadc259da62dc6ed9c65/wcwidth-0.1.8-py2.py3-none-any.whl
+Collecting coverage&gt;=4.4 (from Pytest-cov==2.8.1-&gt;-r requirements.txt (line 3))
+  Downloading https://files.pythonhosted.org/packages/6a/58/df86640436e28ca46fa5e93e603c82abb0cba309b37cbaec1e1188ea53a6/coverage-5.0.3-cp36-cp36m-manylinux1_x86_64.whl (227kB)
+Collecting six (from packaging-&gt;Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/65/eb/1f97cb97bfc2390a276969c6fae16075da282f5058082d4cb10c6c5c1dba/six-1.14.0-py2.py3-none-any.whl
+Collecting pyparsing&gt;=2.0.2 (from packaging-&gt;Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/5d/bc/1e58593167fade7b544bfe9502a26dc860940a79ab306e651e7f13be68c2/pyparsing-2.4.6-py2.py3-none-any.whl
+Collecting zipp&gt;=0.5 (from importlib-metadata&gt;=0.12; python_version &lt; "3.8"-&gt;Pytest==5.3.5-&gt;-r requirements.txt (line 2))
+  Using cached https://files.pythonhosted.org/packages/b2/34/bfcb43cc0ba81f527bc4f40ef41ba2ff4080e047acb0586b56b3d017ace4/zipp-3.1.0-py3-none-any.whl
+Installing collected packages: sortedcontainers, attrs, Hypothesis, py, more-itertools, six, pyparsing, packaging, zipp, importlib-metadata, pluggy, wcwidth, Pytest, coverage, Pytest-cov
+Successfully installed Hypothesis-5.6.0 Pytest-5.3.5 Pytest-cov-2.8.1 attrs-19.3.0 coverage-5.0.3 importlib-metadata-1.5.0 more-itertools-8.2.0 packaging-20.1 pluggy-0.13.1 py-1.8.1 pyparsing-2.4.6 six-1.14.0 sortedcontainers-2.1.0 wcwidth-0.1.8 zipp-3.1.0
+</pre>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.board <span style="color: #F0DFAF; font-weight: bold;">import</span> Board, Orientation
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.ship <span style="color: #F0DFAF; font-weight: bold;">import</span> Ship
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.pieces <span style="color: #F0DFAF; font-weight: bold;">import</span> EmptyPiece, WaterPiece, ShipPiece, HitShipPiece
+<span style="color: #F0DFAF; font-weight: bold;">from</span> hypothesis <span style="color: #F0DFAF; font-weight: bold;">import</span> given, strategies <span style="color: #F0DFAF; font-weight: bold;">as</span> st
+
+
+<span style="color: #7F9F7F;">@given</span><span style="color: #dedded;">(</span>st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">0</span>, max_value=<span style="color: #9796c4;">9</span><span style="color: #BFEBBF;">)</span>,
+       st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">0</span>, max_value=<span style="color: #9796c4;">9</span><span style="color: #BFEBBF;">)</span>,
+       st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">2</span>, max_value=<span style="color: #9796c4;">5</span><span style="color: #BFEBBF;">)</span>,
+       st.sampled_from<span style="color: #BFEBBF;">(</span>Orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">testShipAdd</span><span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>:
+    <span style="color: #9796c4;">"""We test that we can add valid combinations of coordinates, lengths and orientations to a board"""</span>
+    <span style="color: #E0CF9F;">b</span> = Board<span style="color: #dedded;">(</span><span style="color: #9796c4;">10</span>,<span style="color: #9796c4;">10</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.vertical:
+        <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span>y + length &lt; b.height<span style="color: #dedded;">)</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">True</span> == b.addShip<span style="color: #BFEBBF;">(</span>x, y, length, orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+          <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">False</span> == b.addShip<span style="color: #BFEBBF;">(</span>x, y, length, orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span>x + length &lt; b.width<span style="color: #dedded;">)</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">True</span> == b.addShip<span style="color: #BFEBBF;">(</span>x, y, length, orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+          <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">False</span> == b.addShip<span style="color: #BFEBBF;">(</span>x, y, length, orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+
+
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">auxCoordsSameAxis</span><span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>:
+    <span style="color: #9796c4;">"""Auxiliary function for the test below"""</span>
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.horizontal:
+        <span style="color: #aeadbd; font-weight: bold;">xrange</span> =  <span style="color: #dedded;">[</span>i <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span>
+                   <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>x - <span style="color: #D0BF8F;">(</span>length // <span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span>, x + <span style="color: #D0BF8F;">(</span>length // <span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>
+                   <span style="color: #F0DFAF; font-weight: bold;">if</span> i &gt;= <span style="color: #9796c4;">0</span><span style="color: #dedded;">]</span>
+        <span style="color: #E0CF9F;">yrange</span> = <span style="color: #dedded;">[</span>y<span style="color: #dedded;">]</span>
+    <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+        <span style="color: #aeadbd; font-weight: bold;">xrange</span> = <span style="color: #dedded;">[</span>x<span style="color: #dedded;">]</span>
+        <span style="color: #E0CF9F;">yrange</span> = <span style="color: #dedded;">[</span>i <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span>
+                  <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>y - <span style="color: #D0BF8F;">(</span>length // <span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span>, y + <span style="color: #D0BF8F;">(</span>length //<span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>
+                  <span style="color: #F0DFAF; font-weight: bold;">if</span> i &gt;= <span style="color: #9796c4;">0</span><span style="color: #dedded;">]</span>
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">xrange</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> yrange<span style="color: #dedded;">]</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">auxCoordsOppositeAxis</span><span style="color: #dedded;">(</span>x, y, length<span style="color: #dedded;">)</span>:
+    <span style="color: #9796c4;">"""Auxiliary function for the test below"""</span>
+    <span style="color: #aeadbd; font-weight: bold;">xrange</span> =  <span style="color: #dedded;">[</span>i <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span>
+               <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>x - <span style="color: #D0BF8F;">(</span>length // <span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span>, x + <span style="color: #D0BF8F;">(</span>length // <span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>
+               <span style="color: #F0DFAF; font-weight: bold;">if</span> i &gt;= <span style="color: #9796c4;">0</span><span style="color: #dedded;">]</span>
+    <span style="color: #E0CF9F;">yrange</span> = <span style="color: #dedded;">[</span>i <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span>
+              <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span>y - <span style="color: #D0BF8F;">(</span>length // <span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span>, y + <span style="color: #D0BF8F;">(</span>length //<span style="color: #9796c4;">2</span><span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>
+              <span style="color: #F0DFAF; font-weight: bold;">if</span> i &gt;= <span style="color: #9796c4;">0</span><span style="color: #dedded;">]</span>
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">xrange</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> yrange<span style="color: #dedded;">]</span>
+
+<span style="color: #7F9F7F;">@given</span><span style="color: #dedded;">(</span>st.data<span style="color: #BFEBBF;">()</span><span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">testNonOverlappingShips</span><span style="color: #dedded;">(</span>data<span style="color: #dedded;">)</span>:
+    <span style="color: #9796c4;">"""We test that given a randomly placed (random) ship, another similar ship</span>
+<span style="color: #9796c4;">cannot be placed in an overlapping position. We check for overlapping positions in</span>
+<span style="color: #9796c4;">    the both orientations"""</span>
+
+    <span style="color: #E0CF9F;">opposites</span> = <span style="color: #dedded;">{</span>Orientation.horizontal : Orientation.vertical,
+                 Orientation.vertical : Orientation.horizontal<span style="color: #dedded;">}</span>
+    <span style="color: #E0CF9F;">side</span> = <span style="color: #9796c4;">10</span>
+    <span style="color: #E0CF9F;">lengthGen</span> = st.integers<span style="color: #dedded;">(</span>min_value=<span style="color: #9796c4;">2</span>, max_value=<span style="color: #9796c4;">5</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">length</span> = data.draw<span style="color: #dedded;">(</span>lengthGen<span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">orientation</span> = data.draw<span style="color: #dedded;">(</span>st.sampled_from<span style="color: #BFEBBF;">(</span>Orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">startingCoord</span> = st.integers<span style="color: #dedded;">(</span>min_value = <span style="color: #9796c4;">0</span>, max_value = <span style="color: #BFEBBF;">(</span>side - length<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">x</span> = data.draw<span style="color: #dedded;">(</span>startingCoord<span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">y</span> = data.draw<span style="color: #dedded;">(</span>startingCoord<span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">b</span> = Board<span style="color: #dedded;">(</span>side, side<span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span>b.canAdd<span style="color: #BFEBBF;">(</span>x, y, length, orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>:
+        b.addShip<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">sameOrientationCoords</span> = auxCoordsSameAxis<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">sameOrientationChecks</span> = <span style="color: #dedded;">[</span>b.canAdd<span style="color: #BFEBBF;">(</span>i, j, length, orientation<span style="color: #BFEBBF;">)</span>
+                                 <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> sameOrientationCoords<span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #BFEBBF;">(</span><span style="color: #aeadbd; font-weight: bold;">any</span><span style="color: #D0BF8F;">(</span>sameOrientationChecks<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">newOrientation</span> = opposites<span style="color: #dedded;">[</span>orientation<span style="color: #dedded;">]</span>
+        <span style="color: #E0CF9F;">newOrientationCoords</span> = auxCoordsOppositeAxis<span style="color: #dedded;">(</span>x, y, length<span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">newOrientationChecks</span> = <span style="color: #dedded;">[</span>b.canAdd<span style="color: #BFEBBF;">(</span>i, j, length, newOrientation<span style="color: #BFEBBF;">)</span>
+                                <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> newOrientationCoords<span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #BFEBBF;">(</span><span style="color: #aeadbd; font-weight: bold;">any</span><span style="color: #D0BF8F;">(</span>newOrientationChecks<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+
+
+
+<span style="color: #7F9F7F;">@given</span><span style="color: #dedded;">(</span>st.data<span style="color: #BFEBBF;">()</span><span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">testShipFire</span><span style="color: #dedded;">(</span>data<span style="color: #dedded;">)</span>:
+    <span style="color: #9796c4;">"""We check that given a list of firing coordinates on the board, after firing, the</span>
+<span style="color: #9796c4;">    number of `HitShipPiece` instances on the grid is the same as the sum of cardinalities</span>
+<span style="color: #9796c4;">    for all the ships' hits on the board (populated as per the game rules)."""</span>
+    <span style="color: #E0CF9F;">b</span> = Board<span style="color: #dedded;">(</span><span style="color: #9796c4;">10</span>,<span style="color: #9796c4;">10</span><span style="color: #dedded;">)</span>
+    b.populate<span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #9796c4;">2</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">4</span>, <span style="color: #9796c4;">5</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">coords</span> = st.tuples<span style="color: #dedded;">(</span>st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">0</span>, max_value=<span style="color: #9796c4;">9</span><span style="color: #BFEBBF;">)</span>,
+                       st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">0</span>, max_value=<span style="color: #9796c4;">9</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">fireCoordinates</span> = data.draw<span style="color: #dedded;">(</span>st.lists<span style="color: #BFEBBF;">(</span>coords, min_size = <span style="color: #9796c4;">1</span>, max_size = <span style="color: #9796c4;">50</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> fireCoordinates:
+        b.fire<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">hitPieces</span> = <span style="color: #aeadbd; font-weight: bold;">sum</span><span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span><span style="color: #9796c4;">0</span>, b.width<span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span><span style="color: #9796c4;">0</span>, b.height<span style="color: #D0BF8F;">)</span>
+                     <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">isinstance</span><span style="color: #D0BF8F;">(</span>b.grid<span style="color: #a7a6d4;">[</span>i<span style="color: #a7a6d4;">][</span>j<span style="color: #a7a6d4;">]</span>, HitShipPiece<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">cardinalities</span> = <span style="color: #aeadbd; font-weight: bold;">sum</span><span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #D0BF8F;">(</span>b.ships<span style="color: #a7a6d4;">[</span>k<span style="color: #a7a6d4;">]</span>.hits<span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> k <span style="color: #F0DFAF; font-weight: bold;">in</span> b.ships.keys<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span>hitPieces == cardinalities<span style="color: #dedded;">)</span>
+
+</pre>
+</div>
+
+
+
+<p>
+We can check how our code is behaving so far:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">pytest --cov=./
+</pre>
+</div>
+
+<pre class="example">
+============================= test session starts ==============================
+platform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+rootdir: /home/mvr/Devel/Python/battleship
+plugins: cov-2.8.1, hypothesis-5.6.0
+collected 1 item
+
+battleship/test_board.py .                                               [100%]
+
+----------- coverage: platform linux, python 3.6.9-final-0 -----------
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+battleship/board.py           49      7    86%
+battleship/pieces.py          24      7    71%
+battleship/ship.py             9      3    67%
+battleship/test_board.py      13      0   100%
+setup.py                       2      2     0%
+----------------------------------------------
+TOTAL                         97     19    80%
+
+
+============================== 1 passed in 0.23s ===============================
+</pre>
+
+<p>
+With this basic testing in place, we can go back to our <code>Board</code> class, and add
+the functionality for firing. When firing at a position, we should get an
+indication of what was hit, and whether a ship was sunk. We can do this with
+just an enum for now.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">FireResult</span><span style="color: #dedded;">(</span>Enum<span style="color: #dedded;">)</span>:
+    <span style="color: #E0CF9F;">water</span> = <span style="color: #9796c4;">0</span>
+    <span style="color: #E0CF9F;">hit</span> = <span style="color: #9796c4;">1</span>
+    <span style="color: #E0CF9F;">sunk</span> = <span style="color: #9796c4;">2</span>
+</pre>
+</div>
+
+<p>
+We now define the <code>fire</code> method
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">fire</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>,x,y<span style="color: #dedded;">)</span>:
+    <span style="color: #E0CF9F;">result</span> = FireResult.water
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> x &lt; <span style="color: #F0DFAF; font-weight: bold;">self</span>.width <span style="color: #F0DFAF; font-weight: bold;">and</span> y &lt; <span style="color: #F0DFAF; font-weight: bold;">self</span>.height:
+        <span style="color: #E0CF9F;">piece</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>x<span style="color: #dedded;">][</span>y<span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> piece.isEmpty<span style="color: #dedded;">()</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>x<span style="color: #dedded;">][</span>y<span style="color: #dedded;">]</span> = WaterPiece<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+            <span style="color: #E0CF9F;">idx</span> = piece.index
+            <span style="color: #E0CF9F;">shipId</span> = piece.shipId
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #dedded;">[</span>shipId<span style="color: #dedded;">]</span>.hit<span style="color: #dedded;">(</span>idx<span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.grid<span style="color: #dedded;">[</span>x<span style="color: #dedded;">][</span>y<span style="color: #dedded;">]</span> = HitShipPiece<span style="color: #dedded;">(</span>shipId, idx<span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">result</span> = FireResult.hit
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #dedded;">[</span>shipId<span style="color: #dedded;">]</span>.isSunk<span style="color: #dedded;">()</span>:
+                <span style="color: #E0CF9F;">result</span> = FireResult.sunk
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> result
+
+</pre>
+</div>
+
+
+<p>
+To test the firing functionality, we will use the following property: given a
+number of shots fired, the number of pieces on the board that are an instance of
+<code>HitShipPiece</code> must match the sum of all the cardinalities of the <code>hits</code> set of
+all ships on the board. Since for testing this property we need a populated
+board, we can also implement a <code>Board.populate</code> method, which will also come in
+handy later on for placing the ships for our "AI".
+</p>
+
+<p>
+The <code>Board.populate</code> method will take a list of lengths, and fit them randomly
+on the board (since the game rules state the number and size of the ships, as
+well as the size of the board, and we know that a placement is always feasible,
+we won't check for feasibility of the placement in this method).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">populate</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, sizes<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> s <span style="color: #F0DFAF; font-weight: bold;">in</span> sizes:
+        <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">False</span>
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> done:
+            <span style="color: #E0CF9F;">orientation</span> = choice<span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">list</span><span style="color: #BFEBBF;">(</span>Orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">maxX</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.vertical <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - s
+            <span style="color: #E0CF9F;">maxY</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.horizontal <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - s
+            <span style="color: #E0CF9F;">x</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxX<span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">y</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxY<span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.canAdd<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.addShip<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>
+                <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">True</span>
+</pre>
+</div>
+
+
+<p>
+Let us now test the <code>fire</code> method as discussed above:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #7F9F7F;">@given</span><span style="color: #dedded;">(</span>st.data<span style="color: #BFEBBF;">()</span><span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">testShipFire</span><span style="color: #dedded;">(</span>data<span style="color: #dedded;">)</span>:
+    <span style="color: #9796c4;">"""We check that given a list of firing coordinates on the board, after firing, the</span>
+<span style="color: #9796c4;">    number of `HitShipPiece` instances on the grid is the same as the sum of cardinalities</span>
+<span style="color: #9796c4;">    for all the ships' hits on the board (populated as per the game rules)."""</span>
+    <span style="color: #E0CF9F;">b</span> = Board<span style="color: #dedded;">(</span><span style="color: #9796c4;">10</span>,<span style="color: #9796c4;">10</span><span style="color: #dedded;">)</span>
+    b.populate<span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #9796c4;">2</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">4</span>, <span style="color: #9796c4;">5</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">coords</span> = st.tuples<span style="color: #dedded;">(</span>st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">0</span>, max_value=<span style="color: #9796c4;">9</span><span style="color: #BFEBBF;">)</span>,
+                       st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">0</span>, max_value=<span style="color: #9796c4;">9</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">fireCoordinates</span> = data.draw<span style="color: #dedded;">(</span>st.lists<span style="color: #BFEBBF;">(</span>coords, min_size = <span style="color: #9796c4;">1</span>, max_size = <span style="color: #9796c4;">50</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> fireCoordinates:
+        b.fire<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">hitPieces</span> = <span style="color: #aeadbd; font-weight: bold;">sum</span><span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span><span style="color: #9796c4;">0</span>, b.width<span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #D0BF8F;">(</span><span style="color: #9796c4;">0</span>, b.height<span style="color: #D0BF8F;">)</span>
+                     <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">isinstance</span><span style="color: #D0BF8F;">(</span>b.grid<span style="color: #a7a6d4;">[</span>i<span style="color: #a7a6d4;">][</span>j<span style="color: #a7a6d4;">]</span>, HitShipPiece<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">cardinalities</span> = <span style="color: #aeadbd; font-weight: bold;">sum</span><span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #D0BF8F;">(</span>b.ships<span style="color: #a7a6d4;">[</span>k<span style="color: #a7a6d4;">]</span>.hits<span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> k <span style="color: #F0DFAF; font-weight: bold;">in</span> b.ships.keys<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span>hitPieces == cardinalities<span style="color: #dedded;">)</span>
+
+</pre>
+</div>
+
+
+
+<div class="org-src-container">
+<pre class="src src-sh">pytest --cov=./
+</pre>
+</div>
+
+<pre class="example">
+============================= test session starts ==============================
+platform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+rootdir: /home/mvr/Devel/Python/battleship
+plugins: cov-2.8.1, hypothesis-5.6.0
+collected 3 items
+
+battleship/test_board.py ...                                             [100%]
+
+----------- coverage: platform linux, python 3.6.9-final-0 -----------
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+battleship/board.py           86     13    85%
+battleship/pieces.py          23      4    83%
+battleship/ship.py             9      0   100%
+battleship/test_board.py      53      0   100%
+setup.py                       2      2     0%
+----------------------------------------------
+TOTAL                        173     19    89%
+
+
+============================== 3 passed in 0.82s ===============================
+</pre>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">populate</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, sizes<span style="color: #dedded;">)</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> s <span style="color: #F0DFAF; font-weight: bold;">in</span> sizes:
+        <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">False</span>
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> done:
+            <span style="color: #E0CF9F;">orientation</span> = choice<span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">list</span><span style="color: #BFEBBF;">(</span>Orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">maxX</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.vertical <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.width - s
+            <span style="color: #E0CF9F;">maxY</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - <span style="color: #9796c4;">1</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> orientation == Orientation.horizontal <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.height - s
+            <span style="color: #E0CF9F;">x</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxX<span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">y</span> = randint<span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, maxY<span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.canAdd<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.addShip<span style="color: #dedded;">(</span>x, y, s, orientation<span style="color: #dedded;">)</span>
+                <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">True</span>
+</pre>
+</div>
+
+<p>
+Finally, we add a method to test whether the board is "lost" (all ships are sunk)
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">hasLost</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+  <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #aeadbd; font-weight: bold;">all</span><span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.ships<span style="color: #D0BF8F;">[</span>k<span style="color: #D0BF8F;">]</span>.isSunk<span style="color: #D0BF8F;">()</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> k <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.ships.keys<span style="color: #D0BF8F;">()</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org76b10fa" class="outline-4">
+<h4 id="org76b10fa"><span class="section-number-4">1.2.3</span> AI</h4>
+<div class="outline-text-4" id="text-1-2-3">
+<p>
+For the "AI" part, we will adopt a simple strategy:
+</p>
+<ul class="org-ul">
+<li>First, we note that since all the ships' lengths are at least two, we can
+start testing alternate cells, in a checkerboard pattern. This allows us
+to half the number of starting positions to test.</li>
+<li>Secondly, while it'd be simpler to do this in order, it would be too easy
+to play against, as the player could simply cram their ships on the
+"opposite corner" of where the scan starts, in order to gain time</li>
+<li>For the actual detection, we will check the 4 adjacent cells (or those
+that are valid, anyway), and upon detecting a hit, we can start moving in
+the corresponding orientation, towards both sides of the original cell,
+until the ship pointed at by the original hit cell is sunk, or we can
+detect that adjacent hits corresponded to a different, but adjacent ship
+(there are several edge cases to consider). Using the ship <code>id</code> to detect
+whether we're hitting the same ship could be considered "cheating", since
+the human player doesn't have access to the same information, so an
+alternative would be to do without, and just move across adjacent cells in
+a DSF manner, until a ship is sunk, or we run out of hits (meaning we
+reached the end of a ship, but haven't sunk it)</li>
+</ul>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.board <span style="color: #F0DFAF; font-weight: bold;">import</span> Board, Orientation, FireResult
+<span style="color: #F0DFAF; font-weight: bold;">from</span> random <span style="color: #F0DFAF; font-weight: bold;">import</span> choice
+
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">even</span><span style="color: #dedded;">(</span>n<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">0</span> == n % <span style="color: #9796c4;">2</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">odd</span><span style="color: #dedded;">(</span>n<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">1</span> == n % <span style="color: #9796c4;">2</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">AI</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">checkerboardCoordinates</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">"""Returns a list of alternating coordinates to target"""</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">0</span>, <span style="color: #F0DFAF; font-weight: bold;">self</span>.width<span style="color: #BFEBBF;">)</span>
+                  <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">0</span>, <span style="color: #F0DFAF; font-weight: bold;">self</span>.height<span style="color: #BFEBBF;">)</span>
+                  <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>even<span style="color: #D0BF8F;">(</span>i<span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> odd<span style="color: #D0BF8F;">(</span>j<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">or</span> <span style="color: #BFEBBF;">(</span>odd<span style="color: #D0BF8F;">(</span>i<span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> even<span style="color: #D0BF8F;">(</span>j<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span> 
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">adjacents</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y<span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">coords</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>x - <span style="color: #9796c4;">1</span>, y<span style="color: #BFEBBF;">)</span>, <span style="color: #BFEBBF;">(</span>x + <span style="color: #9796c4;">1</span>, y<span style="color: #BFEBBF;">)</span>, <span style="color: #BFEBBF;">(</span>x, y - <span style="color: #9796c4;">1</span><span style="color: #BFEBBF;">)</span>, <span style="color: #BFEBBF;">(</span>x, y + <span style="color: #9796c4;">1</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> coords
+                <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #BFEBBF;">(</span>i &gt;= <span style="color: #9796c4;">0</span><span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #BFEBBF;">(</span>x &lt; <span style="color: #F0DFAF; font-weight: bold;">self</span>.width<span style="color: #BFEBBF;">)</span>
+                <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #BFEBBF;">(</span>j &gt;= <span style="color: #9796c4;">0</span><span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #BFEBBF;">(</span>j &lt; <span style="color: #F0DFAF; font-weight: bold;">self</span>.height<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, board<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.board = board
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.width = board.width
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.height = board.height
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.explored = <span style="color: #aeadbd; font-weight: bold;">set</span><span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.searchingGlobally = <span style="color: #9796c4;">True</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.remaining = <span style="color: #F0DFAF; font-weight: bold;">self</span>.checkerboardCoordinates<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.finished = <span style="color: #9796c4;">False</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.stack = <span style="color: #dedded;">[]</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">addToLocalSearch</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y<span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">adjCoords</span> = <span style="color: #dedded;">[</span>a <span style="color: #F0DFAF; font-weight: bold;">for</span> a <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.adjacents<span style="color: #BFEBBF;">(</span>x, y<span style="color: #BFEBBF;">)</span>
+                     <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #BFEBBF;">(</span>a <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.explored<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span>adjCoords<span style="color: #dedded;">)</span> &gt; <span style="color: #9796c4;">0</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">for</span> a <span style="color: #F0DFAF; font-weight: bold;">in</span> adjCoords:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.stack.append<span style="color: #dedded;">(</span>a<span style="color: #dedded;">)</span>
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.searchingGlobally = <span style="color: #9796c4;">False</span>
+                <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span>a <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.remaining<span style="color: #dedded;">)</span>:
+                        <span style="color: #F0DFAF; font-weight: bold;">self</span>.remaining.remove<span style="color: #dedded;">(</span>a<span style="color: #dedded;">)</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">search</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">"""Random firing over the remaining checkerboard coordinates"""</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.remaining<span style="color: #dedded;">)</span> == <span style="color: #9796c4;">0</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.finished = <span style="color: #9796c4;">True</span>
+            <span style="color: #F0DFAF; font-weight: bold;">return</span>
+        <span style="color: #E0CF9F;">elem</span> = <span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span> = choice<span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.remaining<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.remaining.remove<span style="color: #dedded;">(</span>elem<span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">outcome</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.board.fire<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.explored.add<span style="color: #dedded;">(</span>elem<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> outcome != FireResult.water:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.addToLocalSearch<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">handleEmptyStack</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">"""If the stack becomes empty during the local search, we need</span>
+<span style="color: #9796c4;">        to go back to a global search, in the same turn"""</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.searchingGlobally = <span style="color: #9796c4;">True</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.search<span style="color: #dedded;">()</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">localSearch</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">"""Do a DFS around a cell that is known to be part of a ship"""</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.stack<span style="color: #dedded;">)</span> == <span style="color: #9796c4;">0</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.handleEmptyStack<span style="color: #dedded;">()</span>
+            <span style="color: #F0DFAF; font-weight: bold;">return</span>
+        <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">False</span>
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> done:
+            <span style="color: #F0DFAF; font-weight: bold;">try</span>:
+                <span style="color: #E0CF9F;">elem</span> = <span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.stack.pop<span style="color: #dedded;">()</span>
+                <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> elem <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.explored:
+                    <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">True</span>
+            <span style="color: #F0DFAF; font-weight: bold;">except</span> <span style="color: #7F9F7F;">IndexError</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.handleEmptyStack<span style="color: #dedded;">()</span>
+                <span style="color: #F0DFAF; font-weight: bold;">return</span>
+        <span style="color: #E0CF9F;">outcome</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.board.fire<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.explored.add<span style="color: #dedded;">(</span>elem<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> outcome != FireResult.water:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.addToLocalSearch<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">playTurn</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #9796c4;">"""Plays the next turn. If we don't have a list of likely ship locations, we will</span>
+<span style="color: #9796c4;">        randomly sample from the not-yet visited positions in the checkerboard pattern. If</span>
+<span style="color: #9796c4;">        we have hit something, we will perform a local search in the surrounding positions in the grid,</span>
+<span style="color: #9796c4;">        depth-first"""</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.searchingGlobally:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.search<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.localSearch<span style="color: #dedded;">()</span>
+</pre>
+</div>
+
+<p>
+The <code>AI</code> class has a simple API in the form of <code>playTurn</code>. We will exercise it
+via generative testing:
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.board <span style="color: #F0DFAF; font-weight: bold;">import</span> Board
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.ai <span style="color: #F0DFAF; font-weight: bold;">import</span> AI
+<span style="color: #F0DFAF; font-weight: bold;">from</span> hypothesis <span style="color: #F0DFAF; font-weight: bold;">import</span> given, strategies <span style="color: #F0DFAF; font-weight: bold;">as</span> st
+
+<span style="color: #7F9F7F;">@given</span><span style="color: #dedded;">(</span>st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">5</span>, max_value=<span style="color: #9796c4;">50</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">testCheckerboard</span><span style="color: #dedded;">(</span>side<span style="color: #dedded;">)</span>:
+    <span style="color: #E0CF9F;">b</span> = Board<span style="color: #dedded;">(</span>side, side<span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">ai</span> = AI<span style="color: #dedded;">(</span>b<span style="color: #dedded;">)</span>
+    <span style="color: #E0CF9F;">checkerboard</span> = ai.checkerboardCoordinates<span style="color: #dedded;">()</span>
+    <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #BFEBBF;">(</span>checkerboard<span style="color: #BFEBBF;">)</span> == <span style="color: #BFEBBF;">(</span><span style="color: #D0BF8F;">(</span>side * side<span style="color: #D0BF8F;">)</span> // <span style="color: #9796c4;">2</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+
+<span style="color: #7F9F7F;">@given</span><span style="color: #dedded;">(</span>st.data<span style="color: #BFEBBF;">()</span><span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">testGameCompletion</span><span style="color: #dedded;">(</span>data<span style="color: #dedded;">)</span>:
+    <span style="color: #E0CF9F;">numberOfGames</span> = data.draw<span style="color: #dedded;">(</span>st.integers<span style="color: #BFEBBF;">(</span>min_value=<span style="color: #9796c4;">1</span>, max_value=<span style="color: #9796c4;">50</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span>, numberOfGames<span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">b</span> = Board<span style="color: #dedded;">(</span><span style="color: #9796c4;">10</span>, <span style="color: #9796c4;">10</span><span style="color: #dedded;">)</span>
+        b.populate<span style="color: #dedded;">(</span><span style="color: #BFEBBF;">[</span><span style="color: #9796c4;">2</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">4</span>, <span style="color: #9796c4;">5</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">ai</span> = AI<span style="color: #dedded;">(</span>b<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> ai.finished:
+            ai.playTurn<span style="color: #dedded;">()</span>
+        <span style="color: #888389; background-color: #484349;">#</span><span style="color: #888389; background-color: #484349;">assert(all([b.ships[k].isSunk() for k in b.ships.keys()]))</span>
+        <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span>b.hasLost<span style="color: #BFEBBF;">()</span><span style="color: #dedded;">)</span>
+
+</pre>
+</div>
+
+
+<p>
+Let us now run the tests to check that everything is working as expected, and
+what our code coverage looks like:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">pytest --cov=battleship
+</pre>
+</div>
+
+<pre class="example">
+============================= test session starts ==============================
+platform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+rootdir: /home/mvr/Devel/Python/battleship
+plugins: cov-2.8.1, hypothesis-5.6.0
+collected 5 items
+
+battleship/test_ai.py ..                                                 [ 40%]
+battleship/test_board.py ...                                             [100%]
+
+----------- coverage: platform linux, python 3.6.9-final-0 -----------
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+battleship/__init__.py         4      0   100%
+battleship/ai.py              63      0   100%
+battleship/board.py          100     24    76%
+battleship/game.py             1      1     0%
+battleship/pieces.py          25      6    76%
+battleship/ship.py             9      0   100%
+battleship/test_ai.py         17      0   100%
+battleship/test_board.py      53      0   100%
+----------------------------------------------
+TOTAL                        272     31    89%
+
+
+============================== 5 passed in 2.33s ===============================
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org86ea91d" class="outline-4">
+<h4 id="org86ea91d"><span class="section-number-4">1.2.4</span> The Game</h4>
+<div class="outline-text-4" id="text-1-2-4">
+<p>
+With the board mechanics and AI in place, we can now create a <code>Game</code> class
+that will handle the playing and the necessary rules (e.g., board size,
+ships to be added, etc.). It may be helpful to also have a <code>Player</code> class to
+handle the player's turns, and also the player's board setup. Once we have
+the <code>Player</code> and <code>Game</code> ready we can code a CLI driver for actually playing
+the game.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">Player</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, ownBoard, opponentBoard, freeShips<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.ownBoard = ownBoard
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.opponentBoard = opponentBoard
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.freeShips = freeShips
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.readyToPlay = <span style="color: #9796c4;">False</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">populateBoard</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+      <span style="color: #9796c4;">""" Automatically assigns remaining pieces to the board """</span>
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.freeShips<span style="color: #dedded;">)</span> &gt; <span style="color: #9796c4;">0</span>:
+          <span style="color: #F0DFAF; font-weight: bold;">self</span>.ownBoard.populate<span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.freeShips<span style="color: #dedded;">)</span>
+          <span style="color: #F0DFAF; font-weight: bold;">self</span>.freeShips = <span style="color: #dedded;">[]</span>
+          <span style="color: #F0DFAF; font-weight: bold;">self</span>.readyToPlay = <span style="color: #9796c4;">True</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">addShip</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y, length, orientation<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> length <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.freeShips <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.ownBoard.canAdd<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.ownBoard.addShip<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.freeShips.remove<span style="color: #dedded;">(</span>length<span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.freeShips<span style="color: #dedded;">)</span> == <span style="color: #9796c4;">0</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.readyToPlay = <span style="color: #9796c4;">True</span> 
+            <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">True</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #9796c4;">False</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">fire</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.opponentBoard.fire<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+</pre>
+</div>
+
+
+<p>
+The <code>Game</code> itself contains both an <code>AI</code> and a <code>Player</code> instance, and alternates
+turns playing them. For the <code>AI</code> interaction, it suffices to call into
+<code>playTurn</code>. For the actual player, however, we need some interaction mechanism.
+In this instance it will be a simple CLI, and we will keep it separate from the
+game itself (should we ever want to change it into something else). We will have
+this interaction module drive the game.
+</p>
+
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.board <span style="color: #F0DFAF; font-weight: bold;">import</span> Board
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.ai <span style="color: #F0DFAF; font-weight: bold;">import</span> AI
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.player <span style="color: #F0DFAF; font-weight: bold;">import</span> Player
+<span style="color: #F0DFAF; font-weight: bold;">from</span> enum <span style="color: #F0DFAF; font-weight: bold;">import</span> Enum
+<span style="color: #F0DFAF; font-weight: bold;">from</span> random <span style="color: #F0DFAF; font-weight: bold;">import</span> choice
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">Turn</span><span style="color: #dedded;">(</span>Enum<span style="color: #dedded;">)</span>:
+    <span style="color: #E0CF9F;">player</span> = <span style="color: #9796c4;">0</span>
+    <span style="color: #E0CF9F;">ai</span> = <span style="color: #9796c4;">1</span>
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">Game</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, boardSize = <span style="color: #9796c4;">10</span>, fleet = <span style="color: #BFEBBF;">[</span><span style="color: #9796c4;">2</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">3</span>, <span style="color: #9796c4;">4</span>, <span style="color: #9796c4;">5</span><span style="color: #BFEBBF;">]</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard = Board<span style="color: #dedded;">(</span>boardSize, boardSize<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.aiBoard = Board<span style="color: #dedded;">(</span>boardSize, boardSize<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.aiBoard.populate<span style="color: #dedded;">(</span>fleet<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.ai = AI<span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.player = Player<span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard, <span style="color: #F0DFAF; font-weight: bold;">self</span>.aiBoard, fleet<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.nextTurn = choice<span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">list</span><span style="color: #BFEBBF;">(</span>Turn<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.finished = <span style="color: #9796c4;">False</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.winner = <span style="color: #9796c4;">None</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">playAI</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.finished<span style="color: #dedded;">)</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.nextTurn == Turn.ai:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.ai.playTurn<span style="color: #dedded;">()</span>
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.nextTurn = Turn.player
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard.hasLost<span style="color: #dedded;">()</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.finished = <span style="color: #9796c4;">True</span>
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.winner = Turn.ai
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">playPlayer</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, x, y<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.finished<span style="color: #dedded;">)</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.nextTurn == Turn.player:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.player.fire<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.nextTurn = Turn.ai
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #F0DFAF; font-weight: bold;">self</span>.aiBoard.hasLost<span style="color: #dedded;">()</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.finished = <span style="color: #9796c4;">True</span>
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.winner = Turn.player
+</pre>
+</div>
+
+<p>
+We can quickly test that a <code>Game</code> instance will behave correctly by driving a
+dummy player who plays random positions.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> hypothesis <span style="color: #F0DFAF; font-weight: bold;">import</span> given, strategies <span style="color: #F0DFAF; font-weight: bold;">as</span> st
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.game <span style="color: #F0DFAF; font-weight: bold;">import</span> Game, Turn
+<span style="color: #F0DFAF; font-weight: bold;">from</span> random <span style="color: #F0DFAF; font-weight: bold;">import</span> choice
+
+<span style="color: #7F9F7F;">@given</span><span style="color: #dedded;">(</span>st.data<span style="color: #BFEBBF;">()</span><span style="color: #dedded;">)</span>
+<span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">testFullGame</span><span style="color: #dedded;">(</span>data<span style="color: #dedded;">)</span>:
+    <span style="color: #9796c4;">"""We play a number of games, AI vs dummy player, and verify that each game</span>
+<span style="color: #9796c4;">    has a single winning board"""</span>
+    <span style="color: #E0CF9F;">numberOfGames</span> = data.draw<span style="color: #dedded;">(</span>st.integers<span style="color: #BFEBBF;">(</span>min_value = <span style="color: #9796c4;">10</span>,
+                                          max_value = <span style="color: #9796c4;">30</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+    <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">1</span>, numberOfGames<span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">game</span> = Game<span style="color: #dedded;">()</span>
+        <span style="color: #E0CF9F;">side</span> = game.playerBoard.width
+        <span style="color: #E0CF9F;">coords</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, j<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">0</span>, side<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> j <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">0</span>, side<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> game.finished:
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> game.nextTurn == Turn.ai:
+                game.playAI<span style="color: #dedded;">()</span>
+            <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+                <span style="color: #E0CF9F;">elem</span> = <span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span> = choice<span style="color: #dedded;">(</span>coords<span style="color: #dedded;">)</span>
+                coords.remove<span style="color: #dedded;">(</span>elem<span style="color: #dedded;">)</span>
+                game.playPlayer<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">assert</span><span style="color: #dedded;">(</span><span style="color: #BFEBBF;">(</span>game.aiBoard.hasLost<span style="color: #D0BF8F;">()</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #D0BF8F;">(</span>game.playerBoard.hasLost<span style="color: #a7a6d4;">()</span><span style="color: #D0BF8F;">)</span> <span style="color: #F0DFAF; font-weight: bold;">or</span>
+                <span style="color: #D0BF8F;">(</span><span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #a7a6d4;">(</span>game.aiBoard.hasLost<span style="color: #9FC59F;">()</span><span style="color: #a7a6d4;">)</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> game.playerBoard.hasLost<span style="color: #a7a6d4;">()</span><span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>
+</pre>
+</div>
+
+
+<p>
+We exercise the <code>Game</code> API, and verify that every game ends, and ends with a
+single winner.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">pytest --cov=battleship
+</pre>
+</div>
+
+<pre class="example">
+============================= test session starts ==============================
+platform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+rootdir: /home/mvr/Devel/Python/battleship
+plugins: cov-2.8.1, hypothesis-5.6.0
+collected 6 items
+
+battleship/test_ai.py ..                                                 [ 33%]
+battleship/test_board.py ...                                             [ 83%]
+battleship/test_game.py .                                                [100%]
+
+----------- coverage: platform linux, python 3.6.9-final-0 -----------
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+battleship/__init__.py         6      0   100%
+battleship/ai.py              63      0   100%
+battleship/board.py          100     23    77%
+battleship/cli.py             69     59    14%
+battleship/game.py            32      2    94%
+battleship/pieces.py          25      6    76%
+battleship/player.py          21     11    48%
+battleship/ship.py             9      0   100%
+battleship/test_ai.py         17      0   100%
+battleship/test_board.py      53      0   100%
+battleship/test_game.py       16      0   100%
+----------------------------------------------
+TOTAL                        411    101    75%
+
+
+============================== 6 passed in 2.81s ===============================
+</pre>
+
+<p>
+The CLI driver will handle display, player input, and stepping the game. This
+will be a minimal viable driver, meant to cover the basic requirements, only.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #F0DFAF; font-weight: bold;">import</span> sys, os
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.game <span style="color: #F0DFAF; font-weight: bold;">import</span> Game, Turn
+<span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.board <span style="color: #F0DFAF; font-weight: bold;">import</span> Orientation
+
+<span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">CLIDriver</span><span style="color: #dedded;">()</span>:
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.game = Game<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard = <span style="color: #F0DFAF; font-weight: bold;">self</span>.game.playerBoard
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.aiBoard = <span style="color: #F0DFAF; font-weight: bold;">self</span>.game.aiBoard
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.renderBoards<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.playerInit<span style="color: #dedded;">()</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">renderBoards</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        os.system<span style="color: #dedded;">(</span><span style="color: #DCA3A3;">'clear'</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span><span style="color: #DCA3A3;">'Your board\n'</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard.printBoard<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span><span style="color: #DCA3A3;">'Opponent\'s board \n'</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.aiBoard.printBoard<span style="color: #dedded;">(</span>opponentView=<span style="color: #9796c4;">True</span><span style="color: #dedded;">)</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">doMenu</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>, opts, prompt<span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">self</span>.renderBoards<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span>prompt + <span style="color: #DCA3A3;">' (type "quit!" to quit)'</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #dedded;">(</span>i, text<span style="color: #dedded;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> opts:
+            <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span><span style="color: #aeadbd; font-weight: bold;">str</span><span style="color: #BFEBBF;">(</span>i<span style="color: #BFEBBF;">)</span> + <span style="color: #DCA3A3;">' - '</span> + text<span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #9796c4;">True</span>:
+            <span style="color: #E0CF9F;">choice</span> = <span style="color: #aeadbd; font-weight: bold;">input</span><span style="color: #dedded;">(</span><span style="color: #DCA3A3;">"your choice: "</span><span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span>choice == <span style="color: #DCA3A3;">"quit!"</span><span style="color: #dedded;">)</span>:
+                <span style="color: #9796c4;">exit</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span><span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">idx</span> = <span style="color: #dedded;">[</span>i <span style="color: #F0DFAF; font-weight: bold;">for</span> <span style="color: #BFEBBF;">(</span>i, t<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">in</span> opts <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">str</span><span style="color: #BFEBBF;">(</span>i<span style="color: #BFEBBF;">)</span> == choice<span style="color: #dedded;">]</span>
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span>idx<span style="color: #dedded;">)</span> &gt; <span style="color: #9796c4;">0</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">return</span> idx<span style="color: #dedded;">[</span><span style="color: #9796c4;">0</span><span style="color: #dedded;">]</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">playerInit</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span><span style="color: #DCA3A3;">'Select your ship positions:'</span><span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">opts</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">1</span>, <span style="color: #DCA3A3;">"Automatic assignment"</span><span style="color: #BFEBBF;">)</span>,
+                <span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">2</span>, <span style="color: #DCA3A3;">"Manual Assignment"</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+        <span style="color: #E0CF9F;">choice</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"Automatic or manual?"</span><span style="color: #dedded;">)</span>
+        <span style="color: #F0DFAF; font-weight: bold;">if</span> choice == <span style="color: #9796c4;">1</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.game.player.populateBoard<span style="color: #dedded;">()</span>
+        <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.doManualPositioning<span style="color: #dedded;">()</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">doManualPositioning</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">player</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.game.player
+        <span style="color: #E0CF9F;">remainingShips</span> = player.freeShips
+        <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">False</span>
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #dedded;">(</span>remainingShips<span style="color: #dedded;">)</span> &gt; <span style="color: #9796c4;">0</span> <span style="color: #F0DFAF; font-weight: bold;">and</span> <span style="color: #F0DFAF; font-weight: bold;">not</span><span style="color: #dedded;">(</span>done<span style="color: #dedded;">)</span>:
+            <span style="color: #E0CF9F;">opts</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, <span style="color: #DCA3A3;">'Length '</span> + <span style="color: #aeadbd; font-weight: bold;">str</span><span style="color: #D0BF8F;">(</span>remainingShips<span style="color: #a7a6d4;">[</span>i<span style="color: #a7a6d4;">]</span><span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span>
+                    <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #aeadbd; font-weight: bold;">len</span><span style="color: #D0BF8F;">(</span>remainingShips<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+            <span style="color: #E0CF9F;">lengthIdx</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"Select ship length"</span><span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">length</span> = remainingShips<span style="color: #dedded;">[</span>lengthIdx<span style="color: #dedded;">]</span>
+            <span style="color: #E0CF9F;">opts</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>o.value, o.name<span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> o <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">list</span><span style="color: #BFEBBF;">(</span>Orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+            <span style="color: #E0CF9F;">oIdx</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"Select ship orientation"</span><span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">orientation</span> = Orientation<span style="color: #dedded;">(</span>oIdx<span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">opts</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, <span style="color: #aeadbd; font-weight: bold;">str</span><span style="color: #D0BF8F;">(</span>i<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">0</span>, <span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard.width<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+            <span style="color: #E0CF9F;">x</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"Select ship column"</span><span style="color: #dedded;">)</span>
+            <span style="color: #E0CF9F;">y</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"Select ship row"</span><span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">if</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span>.playerBoard.canAdd<span style="color: #BFEBBF;">(</span>x, y, length, orientation<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">)</span>:
+                <span style="color: #F0DFAF; font-weight: bold;">self</span>.game.player.addShip<span style="color: #dedded;">(</span>x, y, length, orientation<span style="color: #dedded;">)</span>
+            <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+                <span style="color: #E0CF9F;">opts</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">1</span>, <span style="color: #DCA3A3;">"Continue Manually"</span><span style="color: #BFEBBF;">)</span>, <span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">2</span>, <span style="color: #DCA3A3;">"Place remaining ships automatically"</span><span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+                <span style="color: #E0CF9F;">cont</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"That position was not feasible, how do you want to continue?"</span><span style="color: #dedded;">)</span>
+                <span style="color: #F0DFAF; font-weight: bold;">if</span> cont == <span style="color: #9796c4;">2</span>:
+                    <span style="color: #F0DFAF; font-weight: bold;">self</span>.game.player.populateBoard<span style="color: #dedded;">()</span>
+                    <span style="color: #E0CF9F;">done</span> = <span style="color: #9796c4;">True</span>
+
+    <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">play</span><span style="color: #dedded;">(</span><span style="color: #F0DFAF; font-weight: bold;">self</span><span style="color: #dedded;">)</span>:
+        <span style="color: #E0CF9F;">game</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.game
+        <span style="color: #F0DFAF; font-weight: bold;">while</span> <span style="color: #F0DFAF; font-weight: bold;">not</span> game.finished:
+            <span style="color: #F0DFAF; font-weight: bold;">self</span>.renderBoards<span style="color: #dedded;">()</span>
+            <span style="color: #F0DFAF; font-weight: bold;">if</span> game.nextTurn == Turn.ai:
+                game.playAI<span style="color: #dedded;">()</span>
+            <span style="color: #F0DFAF; font-weight: bold;">else</span>:
+                <span style="color: #E0CF9F;">opts</span> = <span style="color: #dedded;">[</span><span style="color: #BFEBBF;">(</span>i, <span style="color: #aeadbd; font-weight: bold;">str</span><span style="color: #D0BF8F;">(</span>i<span style="color: #D0BF8F;">)</span><span style="color: #BFEBBF;">)</span> <span style="color: #F0DFAF; font-weight: bold;">for</span> i <span style="color: #F0DFAF; font-weight: bold;">in</span> <span style="color: #aeadbd; font-weight: bold;">range</span><span style="color: #BFEBBF;">(</span><span style="color: #9796c4;">0</span>, <span style="color: #F0DFAF; font-weight: bold;">self</span>.aiBoard.width<span style="color: #BFEBBF;">)</span><span style="color: #dedded;">]</span>
+                <span style="color: #E0CF9F;">x</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"Select target column"</span><span style="color: #dedded;">)</span>
+                <span style="color: #E0CF9F;">y</span> = <span style="color: #F0DFAF; font-weight: bold;">self</span>.doMenu<span style="color: #dedded;">(</span>opts, <span style="color: #DCA3A3;">"Select target row"</span><span style="color: #dedded;">)</span>
+                game.playPlayer<span style="color: #dedded;">(</span>x, y<span style="color: #dedded;">)</span>
+        <span style="color: #E0CF9F;">winner</span> = game.winner.name
+        <span style="color: #F0DFAF; font-weight: bold;">print</span><span style="color: #dedded;">(</span>winner + <span style="color: #DCA3A3;">' has won!'</span><span style="color: #dedded;">)</span>
+        <span style="color: #9796c4;">exit</span><span style="color: #dedded;">(</span><span style="color: #9796c4;">0</span><span style="color: #dedded;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

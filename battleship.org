@@ -839,7 +839,6 @@ this interaction module drive the game.
   class Game:
       def __init__(self, boardSize = 10, fleet = [2, 3, 3, 4, 5]):
           self.playerBoard = Board(boardSize, boardSize)
-          print(boardSize)
           self.aiBoard = Board(boardSize, boardSize)
           self.aiBoard.populate(fleet)
           self.ai = AI(self.playerBoard)
@@ -865,89 +864,160 @@ this interaction module drive the game.
                   self.winner = Turn.player
 #+end_src
 
+We can quickly test that a =Game= instance will behave correctly by driving a
+dummy player who plays random positions.
 
-The CLI driver will handle display, player input, and stepping the game. This
-will be a minimal viable driver, meant to cover the basic requirements, only.
 
-#+begin_src python :exports code :results silent :eval never :noweb yes :tangle "battleship/cli.py"
-  import sys, os
+#+begin_src python :exports code :results silent :eval never :noweb yes :tangle "battleship/test_game.py"
+  from hypothesis import given, strategies as st
   from battleship.game import Game, Turn
-  from battleship.board import Orientation
+  from random import choice
 
-  class CLIDriver():
-      def __init__(self):
-          self.game = Game()
-          self.playerBoard = self.game.playerBoard
-          self.aiBoard = self.game.aiBoard
-          self.renderBoards()
-          self.playerInit()
-
-      def renderBoards(self):
-          os.system('clear')
-          print('Your board\n')
-          self.playerBoard.printBoard()
-          print('Opponent\'s board \n')
-          self.aiBoard.printBoard(opponentView=True)
-
-      def doMenu(self, opts, prompt):
-          self.renderBoards()
-          print(prompt + ' (type "quit!" to quit)')
-          for (i, text) in opts:
-              print(str(i) + ' - ' + text)
-          while True:
-              choice = input("your choice: ")
-              if(choice == "quit!"):
-                  exit(0)
-              idx = [i for (i, t) in opts if str(i) == choice]
-              if len(idx) > 0:
-                  return idx[0]
-
-      def playerInit(self):
-          print('Select your ship positions:')
-          opts = [(1, "Automatic assignment"),
-                  (2, "Manual Assignment")]
-          choice = self.doMenu(opts, "Automatic or manual?")
-          if choice == 1:
-              self.game.player.populateBoard()
-          else:
-              self.doManualPositioning()
-
-      def doManualPositioning(self):
-          player = self.game.player
-          remainingShips = player.freeShips
-          done = False
-          while len(remainingShips) > 0 and not(done):
-              opts = [(i, 'Length ' + str(remainingShips[i]))
-                      for i in range(len(remainingShips))]
-              lengthIdx = self.doMenu(opts, "Select ship length")
-              length = remainingShips[lengthIdx]
-              opts = [(o.value, o.name) for o in list(Orientation)]
-              oIdx = self.doMenu(opts, "Select ship orientation")
-              orientation = Orientation(oIdx)
-              opts = [(i, str(i)) for i in range(0, self.playerBoard.width)]
-              x = self.doMenu(opts, "Select ship column")
-              y = self.doMenu(opts, "Select ship row")
-              if(self.playerBoard.canAdd(x, y, length, orientation)):
-                  self.game.player.addShip(x, y, length, orientation)
-              else:
-                  opts = [(1, "Continue Manually"), (2, "Place remaining ships automatically")]
-                  cont = self.doMenu(opts, "That position was not feasible, how do you want to continue?")
-                  if cont == 2:
-                      self.game.player.populateBoard()
-                      done = True
-
-      def play(self):
-          game = self.game
+  @given(st.data())
+  def testFullGame(data):
+      """We play a number of games, AI vs dummy player, and verify that each game
+      has a single winning board"""
+      numberOfGames = data.draw(st.integers(min_value = 10,
+                                            max_value = 30))
+      for i in range(1, numberOfGames):
+          game = Game()
+          side = game.playerBoard.width
+          coords = [(i, j) for i in range(0, side) for j in range(0, side)]
           while not game.finished:
-              self.renderBoards()
               if game.nextTurn == Turn.ai:
                   game.playAI()
               else:
-                  opts = [(i, str(i)) for i in range(0, self.aiBoard.width)]
-                  x = self.doMenu(opts, "Select target column")
-                  y = self.doMenu(opts, "Select target row")
+                  elem = (x, y) = choice(coords)
+                  coords.remove(elem)
                   game.playPlayer(x, y)
-          winner = game.winner.name
-          print(winner + ' has won!')
-          exit(0)
+          assert((game.aiBoard.hasLost() and not(game.playerBoard.hasLost()) or
+                  (not(game.aiBoard.hasLost()) and game.playerBoard.hasLost())))
 #+end_src
+
+
+We exercise the =Game= API, and verify that every game ends, and ends with a
+single winner.
+
+#+begin_src sh :exports both :results output 
+pytest --cov=battleship
+#+end_src
+
+#+RESULTS:
+#+begin_example
+============================= test session starts ==============================
+platform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+rootdir: /home/mvr/Devel/Python/battleship
+plugins: cov-2.8.1, hypothesis-5.6.0
+collected 6 items
+
+battleship/test_ai.py ..                                                 [ 33%]
+battleship/test_board.py ...                                             [ 83%]
+battleship/test_game.py .                                                [100%]
+
+----------- coverage: platform linux, python 3.6.9-final-0 -----------
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+battleship/__init__.py         6      0   100%
+battleship/ai.py              63      0   100%
+battleship/board.py          100     23    77%
+battleship/cli.py             69     59    14%
+battleship/game.py            32      2    94%
+battleship/pieces.py          25      6    76%
+battleship/player.py          21     11    48%
+battleship/ship.py             9      0   100%
+battleship/test_ai.py         17      0   100%
+battleship/test_board.py      53      0   100%
+battleship/test_game.py       16      0   100%
+----------------------------------------------
+TOTAL                        411    101    75%
+
+
+============================== 6 passed in 2.81s ===============================
+#+end_example
+
+  The CLI driver will handle display, player input, and stepping the game. This
+  will be a minimal viable driver, meant to cover the basic requirements, only.
+
+#+begin_src python :exports code :results silent :eval never :noweb yes :tangle "battleship/cli.py"
+    import sys, os
+    from battleship.game import Game, Turn
+    from battleship.board import Orientation
+
+    class CLIDriver():
+        def __init__(self):
+            self.game = Game()
+            self.playerBoard = self.game.playerBoard
+            self.aiBoard = self.game.aiBoard
+            self.renderBoards()
+            self.playerInit()
+
+        def renderBoards(self):
+            os.system('clear')
+            print('Your board\n')
+            self.playerBoard.printBoard()
+            print('Opponent\'s board \n')
+            self.aiBoard.printBoard(opponentView=True)
+
+        def doMenu(self, opts, prompt):
+            self.renderBoards()
+            print(prompt + ' (type "quit!" to quit)')
+            for (i, text) in opts:
+                print(str(i) + ' - ' + text)
+            while True:
+                choice = input("your choice: ")
+                if(choice == "quit!"):
+                    exit(0)
+                idx = [i for (i, t) in opts if str(i) == choice]
+                if len(idx) > 0:
+                    return idx[0]
+
+        def playerInit(self):
+            print('Select your ship positions:')
+            opts = [(1, "Automatic assignment"),
+                    (2, "Manual Assignment")]
+            choice = self.doMenu(opts, "Automatic or manual?")
+            if choice == 1:
+                self.game.player.populateBoard()
+            else:
+                self.doManualPositioning()
+
+        def doManualPositioning(self):
+            player = self.game.player
+            remainingShips = player.freeShips
+            done = False
+            while len(remainingShips) > 0 and not(done):
+                opts = [(i, 'Length ' + str(remainingShips[i]))
+                        for i in range(len(remainingShips))]
+                lengthIdx = self.doMenu(opts, "Select ship length")
+                length = remainingShips[lengthIdx]
+                opts = [(o.value, o.name) for o in list(Orientation)]
+                oIdx = self.doMenu(opts, "Select ship orientation")
+                orientation = Orientation(oIdx)
+                opts = [(i, str(i)) for i in range(0, self.playerBoard.width)]
+                x = self.doMenu(opts, "Select ship column")
+                y = self.doMenu(opts, "Select ship row")
+                if(self.playerBoard.canAdd(x, y, length, orientation)):
+                    self.game.player.addShip(x, y, length, orientation)
+                else:
+                    opts = [(1, "Continue Manually"), (2, "Place remaining ships automatically")]
+                    cont = self.doMenu(opts, "That position was not feasible, how do you want to continue?")
+                    if cont == 2:
+                        self.game.player.populateBoard()
+                        done = True
+
+        def play(self):
+            game = self.game
+            while not game.finished:
+                self.renderBoards()
+                if game.nextTurn == Turn.ai:
+                    game.playAI()
+                else:
+                    opts = [(i, str(i)) for i in range(0, self.aiBoard.width)]
+                    x = self.doMenu(opts, "Select target column")
+                    y = self.doMenu(opts, "Select target row")
+                    game.playPlayer(x, y)
+            winner = game.winner.name
+            print(winner + ' has won!')
+            exit(0)
+#+end_src
+
