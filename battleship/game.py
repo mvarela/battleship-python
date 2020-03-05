@@ -14,6 +14,7 @@ class Game:
         print(boardSize)
         self.aiBoard = Board(boardSize, boardSize)
         self.aiBoard.populate(fleet)
+        self.ai = AI(self.playerBoard)
         self.player = Player(self.playerBoard, self.aiBoard, fleet)
         self.nextTurn = choice(list(Turn))
         self.finished = False

@@ -22,5 +22,5 @@ class Player:
         else:
             return False
 
-    def fire(x, y):
+    def fire(self, x, y):
         return self.opponentBoard.fire(x, y)

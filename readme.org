@@ -811,7 +811,7 @@ TOTAL                        272     31    89%
           else:
               return False
 
-      def fire(x, y):
+      def fire(self, x, y):
           return self.opponentBoard.fire(x, y)
 #+end_src
  
@@ -842,6 +842,7 @@ this interaction module drive the game.
           print(boardSize)
           self.aiBoard = Board(boardSize, boardSize)
           self.aiBoard.populate(fleet)
+          self.ai = AI(self.playerBoard)
           self.player = Player(self.playerBoard, self.aiBoard, fleet)
           self.nextTurn = choice(list(Turn))
           self.finished = False
@@ -890,7 +891,7 @@ will be a minimal viable driver, meant to cover the basic requirements, only.
 
       def doMenu(self, opts, prompt):
           self.renderBoards()
-          print(prompt + '(type "quit!" to quit)')
+          print(prompt + ' (type "quit!" to quit)')
           for (i, text) in opts:
               print(str(i) + ' - ' + text)
           while True:
@@ -900,7 +901,6 @@ will be a minimal viable driver, meant to cover the basic requirements, only.
               idx = [i for (i, t) in opts if str(i) == choice]
               if len(idx) > 0:
                   return idx[0]
-
 
       def playerInit(self):
           print('Select your ship positions:')
@@ -936,4 +936,18 @@ will be a minimal viable driver, meant to cover the basic requirements, only.
                       self.game.player.populateBoard()
                       done = True
 
+      def play(self):
+          game = self.game
+          while not game.finished:
+              self.renderBoards()
+              if game.nextTurn == Turn.ai:
+                  game.playAI()
+              else:
+                  opts = [(i, str(i)) for i in range(0, self.aiBoard.width)]
+                  x = self.doMenu(opts, "Select target column")
+                  y = self.doMenu(opts, "Select target row")
+                  game.playPlayer(x, y)
+          winner = game.winner.name
+          print(winner + ' has won!')
+          exit(0)
 #+end_src

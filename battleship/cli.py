@@ -19,7 +19,7 @@ class CLIDriver():
 
     def doMenu(self, opts, prompt):
         self.renderBoards()
-        print(prompt + '(type "quit!" to quit)')
+        print(prompt + ' (type "quit!" to quit)')
         for (i, text) in opts:
             print(str(i) + ' - ' + text)
         while True:
@@ -29,7 +29,6 @@ class CLIDriver():
             idx = [i for (i, t) in opts if str(i) == choice]
             if len(idx) > 0:
                 return idx[0]
-
 
     def playerInit(self):
         print('Select your ship positions:')
@@ -65,7 +64,17 @@ class CLIDriver():
                     self.game.player.populateBoard()
                     done = True
 
-
-
-def main():
-    driver = CLIDriver()
+    def play(self):
+        game = self.game
+        while not game.finished:
+            self.renderBoards()
+            if game.nextTurn == Turn.ai:
+                game.playAI()
+            else:
+                opts = [(i, str(i)) for i in range(0, self.aiBoard.width)]
+                x = self.doMenu(opts, "Select target column")
+                y = self.doMenu(opts, "Select target row")
+                game.playPlayer(x, y)
+        winner = game.winner.name
+        print(winner + ' has won!')
+        exit(0)
