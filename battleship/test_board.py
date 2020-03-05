@@ -1,6 +1,6 @@
-from board import Board, Orientation
-from ship import Ship
-from pieces import EmptyPiece, WaterPiece, ShipPiece, HitShipPiece
+from battleship.board import Board, Orientation
+from battleship.ship import Ship
+from battleship.pieces import EmptyPiece, WaterPiece, ShipPiece, HitShipPiece
 from hypothesis import given, strategies as st
 
 

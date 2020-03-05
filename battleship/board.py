@@ -1,8 +1,8 @@
-from pieces import (EmptyPiece, WaterPiece,
+from battleship.pieces import (EmptyPiece, WaterPiece,
              ShipPiece, HitShipPiece)
 from enum import Enum
 from random import choice, randint
-from ship import Ship
+from battleship.ship import Ship
 from uuid import uuid4
 
 

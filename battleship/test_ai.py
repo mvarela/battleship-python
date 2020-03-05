@@ -1,5 +1,5 @@
-from board import Board
-from ai import AI
+from battleship.board import Board
+from battleship.ai import AI
 from hypothesis import given, strategies as st
 
 @given(st.integers(min_value=5, max_value=50))

@@ -1,4 +1,4 @@
-from board import Board, Orientation, FireResult
+from battleship.board import Board, Orientation, FireResult
 from random import choice
 
 def even(n):

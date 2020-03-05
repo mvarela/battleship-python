@@ -28,10 +28,6 @@
      '((emacs-lisp . t)
        (python . t)
        (jupyter . t)))
-  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                       (:session . "py")
-                                                      (:kernel . "python3")))
-
     (setq-local org-tangle-root-dir "./battleship")
     (setq-local org-tangle-on-save t)
 #+end_src
@@ -59,7 +55,7 @@
    - The game ends when a player sinks all the oponent's ships.
      
      
-** Data model
+** Data Model & Implementation
    - The core of the problem lies in representing the board's state, and its transitions.
      - The grid itself can be represented as an array of arrays (I guess list of
        lists in Python's parlance), and within each cell in the grid, we
@@ -90,6 +86,14 @@ setup(name='battleship',
       author_email = 'martin@varela.fi',
       packages = ['battleship'],
       zip_safe = False)
+#+end_src
+
+We initialize the module
+#+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/__init__.py"
+from battleship.board  import *
+from battleship.pieces import *
+from battleship.ship   import *
+from battleship.ai     import *
 #+end_src
 *** Board and Ships
      
@@ -150,7 +154,7 @@ Coming to our board, we can now create the basic functionality. We need to:
 - Check whether the board is "lost" (that is, all ships have been sunk)
 
 #+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/board.py" :noweb yes
-  from pieces import (EmptyPiece, WaterPiece,
+  from battleship.pieces import (EmptyPiece, WaterPiece,
                ShipPiece, HitShipPiece)
   from enum import Enum
   from random import choice, randint
@@ -262,7 +266,7 @@ With our =Ship= definition at hand, we can now do:
 
 
 #+begin_src python :exports code :results silent :eval never :noweb-ref shipImport
-  from ship import Ship
+  from battleship.ship import Ship
   from uuid import uuid4
 #+end_src
 
@@ -336,9 +340,9 @@ Successfully installed Hypothesis-5.6.0 Pytest-5.3.5 Pytest-cov-2.8.1 attrs-19.3
 
 
 #+begin_src python :exports code :results silent :eval never :tangle "battleship/test_board.py" :noweb yes
-  from board import Board, Orientation
-  from ship import Ship
-  from pieces import EmptyPiece, WaterPiece, ShipPiece, HitShipPiece
+  from battleship.board import Board, Orientation
+  from battleship.ship import Ship
+  from battleship.pieces import EmptyPiece, WaterPiece, ShipPiece, HitShipPiece
   from hypothesis import given, strategies as st
 
 
@@ -613,7 +617,7 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
 
  
 #+begin_src python :exports code :results silent :eval never :noweb yes :tangle "battleship/ai.py"
-  from board import Board, Orientation, FireResult
+  from battleship.board import Board, Orientation, FireResult
   from random import choice
 
   def even(n):
@@ -709,8 +713,8 @@ via generative testing:
 
 
 #+begin_src python :exports code :results silent :eval never :noweb yes :tangle "battleship/test_ai.py"
-  from board import Board
-  from ai import AI
+  from battleship.board import Board
+  from battleship.ai import AI
   from hypothesis import given, strategies as st
 
   @given(st.integers(min_value=5, max_value=50))
@@ -732,3 +736,44 @@ via generative testing:
           assert(all([b.ships[k].isSunk() for k in b.ships.keys()]))
 
 #+end_src
+
+
+Let us now run the tests to check that everything is working as expected, and
+what our code coverage looks like:
+
+#+begin_src sh :exports both :results output 
+pytest --cov=battleship
+#+end_src
+
+#+RESULTS:
+#+begin_example
+============================= test session starts ==============================
+platform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+rootdir: /home/mvr/Devel/Python/battleship
+plugins: cov-2.8.1, hypothesis-5.6.0
+collected 5 items
+
+battleship/test_ai.py ..                                                 [ 40%]
+battleship/test_board.py ...                                             [100%]
+
+----------- coverage: platform linux, python 3.6.9-final-0 -----------
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+battleship/__init__.py         4      0   100%
+battleship/ai.py              63      0   100%
+battleship/board.py          100     24    76%
+battleship/game.py             1      1     0%
+battleship/pieces.py          25      6    76%
+battleship/ship.py             9      0   100%
+battleship/test_ai.py         17      0   100%
+battleship/test_board.py      53      0   100%
+----------------------------------------------
+TOTAL                        272     31    89%
+
+
+============================== 5 passed in 2.33s ===============================
+#+end_example
+
+*** The Game
+    With all the board mechanics and AI in place, we can now code a CLI driver
+    for the game.
