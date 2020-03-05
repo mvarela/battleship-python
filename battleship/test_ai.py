@@ -18,4 +18,5 @@ def testGameCompletion(data):
         ai = AI(b)
         while not ai.finished:
             ai.playTurn()
-        assert(all([b.ships[k].isSunk() for k in b.ships.keys()]))
+        #assert(all([b.ships[k].isSunk() for k in b.ships.keys()]))
+        assert(b.hasLost())

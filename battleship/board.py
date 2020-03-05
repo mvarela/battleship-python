@@ -30,14 +30,14 @@ been fired upon.
   def rowString(self, n, opponentView = False):
     if n <= self.height:
       rowStr = ' | '.join([self.grid[i][n].draw(opponentView) for i in range(self.width)])
-      return('| ' + rowStr + ' |\n')
+      return('| ' + rowStr + ' |')
     else:
       return ''
 
   def printBoard(self, opponentView = False):
     rows = [self.rowString(i, opponentView) for i in range(self.height)]
     header = '  ' + '| '  + ' | '.join(['%s' %i for i in range(0,self.width)]) + ' |'
-    hsep =  ''.join(['_' for i in range(0, len(header))]) + '\n'
+    hsep =  ''.join(['_' for i in range(0, len(header))]) 
     print(header)
     print(hsep)
     for idx, r in enumerate(rows):
