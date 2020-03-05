@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+from battleship.board import Orientation
+from battleship.cli import *
+
+cli = CLIDriver()
+cli.play()
