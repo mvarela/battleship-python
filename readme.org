@@ -2,11 +2,13 @@
 
   This is a quick implementation of the Battleship game in Python
   
-  The game is programmed in a literate style, using Emacs' =org-mode=. The
-  sources are /tangled/ from the [[battleship.org]] file, and the project can be
-  built and tested from within emacs (actually, it can be done from this very
-  file), by executing the following code blocks (of course, this can also be
-  done in the command line):
+  The game is programmed in a literate style, using Emacs' =org-mode= and
+  =noweb=, to allow us to interleave text and code freely. The
+  sources are /tangled/ (extracted) from the [[battleship.org]] file (open the file
+  in emacs, ensure =ob-python= is available, and invoke the =org-babel-tangle=
+  command), and the project can be built and tested from within emacs, by
+  executing the following code blocks (of course, this can also be done in the
+  command line).
 
   First, we need to make sure we have all the dependencies (assuming a working
   Python 3 install with a =pip3= available):
@@ -51,7 +53,7 @@ pip3 install -r requirements.txt
  Successfully installed Hypothesis-5.6.0 Pytest-5.3.5 Pytest-cov-2.8.1 attrs-19.3.0 coverage-5.0.3 importlib-metadata-1.5.0 more-itertools-8.2.0 packaging-20.3 pluggy-0.13.1 py-1.8.1 pyparsing-2.4.6 six-1.14.0 sortedcontainers-2.1.0 wcwidth-0.1.8 zipp-3.1.0
  #+end_example
 
- 
+** Testing 
 We can also run the test suite like so:
 #+begin_src sh :exports both :results output
 pytest --cov=battleship
@@ -63,10 +65,11 @@ pytest --cov=battleship
 platform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
 rootdir: /home/mvr/Devel/Python/battleship
 plugins: cov-2.8.1, hypothesis-5.6.0
-collected 5 items
+collected 6 items
 
-battleship/test_ai.py ..                                                 [ 40%]
-battleship/test_board.py ...                                             [100%]
+battleship/test_ai.py ..                                                 [ 33%]
+battleship/test_board.py ...                                             [ 83%]
+battleship/test_game.py .                                                [100%]
 
 ----------- coverage: platform linux, python 3.6.9-final-0 -----------
 Name                       Stmts   Miss  Cover
@@ -75,19 +78,35 @@ battleship/__init__.py         6      0   100%
 battleship/ai.py              63      0   100%
 battleship/board.py          100     23    77%
 battleship/cli.py             69     59    14%
-battleship/game.py            33     21    36%
+battleship/game.py            32      2    94%
 battleship/pieces.py          25      6    76%
-battleship/player.py          21     16    24%
+battleship/player.py          21     11    48%
 battleship/ship.py             9      0   100%
 battleship/test_ai.py         17      0   100%
 battleship/test_board.py      53      0   100%
+battleship/test_game.py       16      0   100%
 ----------------------------------------------
-TOTAL                        396    125    68%
+TOTAL                        411    101    75%
 
 
-============================== 5 passed in 2.44s ===============================
+============================== 6 passed in 2.78s ===============================
 #+end_example
 
 For the testing, I opted for a generative testing approach, using [[https://hypothesis.readthedocs.io/en/latest/index.html][Hypothesis]],
 which allows to do fairly comprehensive testing with relatively low effort. The
-tests are mostly integration tests; unit testing could be added as needed. 
+tests are mostly integration tests; unit testing could be added as needed. The
+six tests defined cover most of the actual game code (the CLI code is not
+tested, as it would mostly need to be done using =expect= or similar, and it is
+too labor-intensive for this project), with a very large number of conditions.
+
+** Playing
+   For playing, simply invoke the [[play_battleship]] script.
+
+   
+** Documentation
+
+   The annotated source code and rationale has been exported to the
+   [[battleship.html]] file. If reading this online on GitHub, it is better to look
+   at the [[battleship.org]] file, since GitHub renders =org-mode= quite nicely. If
+   on the other hand, you are reading this offline, it is probably better to
+   open the HTML export in your browser, for a nicely formatted view.

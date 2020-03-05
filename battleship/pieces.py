@@ -14,9 +14,6 @@ class WaterPiece(Piece):
 
 class ShipPiece(Piece):
     def __init__(this, shipId, index):
-        """
-
-        """
         this.shipId = shipId
         this.index = index
     def draw(this, opponentView = False):

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- 2020-03-05 to 12:31 -->
+<!-- 2020-03-05 to 13:17 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Battleship (in Python)</title>
@@ -254,15 +254,15 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgcbb2531">1. Battleship</a>
+<li><a href="#org3c6a027">1. Battleship</a>
 <ul>
-<li><a href="#org2d3af24">1.1. Requirements</a></li>
-<li><a href="#org4aa33fb">1.2. Data Model &amp; Implementation</a>
+<li><a href="#org1c8cea8">1.1. Requirements</a></li>
+<li><a href="#org9f12ea6">1.2. Data Model &amp; Implementation</a>
 <ul>
-<li><a href="#org44f95d1">1.2.1. Setup</a></li>
-<li><a href="#org82a5f68">1.2.2. Board and Ships</a></li>
-<li><a href="#org76b10fa">1.2.3. AI</a></li>
-<li><a href="#org86ea91d">1.2.4. The Game</a></li>
+<li><a href="#org1eed580">1.2.1. Setup</a></li>
+<li><a href="#org3b9d7f1">1.2.2. Board and Ships</a></li>
+<li><a href="#orgb8f41ec">1.2.3. AI</a></li>
+<li><a href="#org13bba82">1.2.4. The Game</a></li>
 </ul>
 </li>
 </ul>
@@ -274,17 +274,17 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgcbb2531">1. Battleship</a></li>
+<li><a href="#org3c6a027">1. Battleship</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgcbb2531" class="outline-2">
-<h2 id="orgcbb2531"><span class="section-number-2">1</span> Battleship</h2>
+<div id="outline-container-org3c6a027" class="outline-2">
+<h2 id="org3c6a027"><span class="section-number-2">1</span> Battleship</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org2d3af24" class="outline-3">
-<h3 id="org2d3af24"><span class="section-number-3">1.1</span> Requirements</h3>
+<div id="outline-container-org1c8cea8" class="outline-3">
+<h3 id="org1c8cea8"><span class="section-number-3">1.1</span> Requirements</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 The requirements defined are as follows:
@@ -313,15 +313,15 @@ The requirements defined are as follows:
 </div>
 
 
-<div id="outline-container-org4aa33fb" class="outline-3">
-<h3 id="org4aa33fb"><span class="section-number-3">1.2</span> Data Model &amp; Implementation</h3>
+<div id="outline-container-org9f12ea6" class="outline-3">
+<h3 id="org9f12ea6"><span class="section-number-3">1.2</span> Data Model &amp; Implementation</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li>The core of the problem lies in representing the board's state, and its transitions.
 <ul class="org-ul">
-<li>The grid itself can be represented as an array of arrays (I guess list of
-lists in Python's parlance), and within each cell in the grid, we
-represent the known state, which can be one of the following:
+<li>The grid itself can be represented as an list of lists, and within each
+cell in the grid, we represent the known state, which can be one of the
+following:
 <ul class="org-ul">
 <li>Empty / water (there is no ship here). An empty cell can be revealed as water to the opponent once it's hit.</li>
 <li>Ship. This cell corresponds to a ship. The ships themselves do not
@@ -343,9 +343,13 @@ was "currently doing / planning on doing" at the last turn.</li>
 </ul>
 </div>
 
-<div id="outline-container-org44f95d1" class="outline-4">
-<h4 id="org44f95d1"><span class="section-number-4">1.2.1</span> Setup</h4>
+<div id="outline-container-org1eed580" class="outline-4">
+<h4 id="org1eed580"><span class="section-number-4">1.2.1</span> Setup</h4>
 <div class="outline-text-4" id="text-1-2-1">
+<p>
+We need some boilerplate to setup our project:
+</p>
+
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> setuptools <span style="color: #F0DFAF; font-weight: bold;">import</span> setup
 
@@ -373,8 +377,8 @@ We initialize the module
 </div>
 </div>
 </div>
-<div id="outline-container-org82a5f68" class="outline-4">
-<h4 id="org82a5f68"><span class="section-number-4">1.2.2</span> Board and Ships</h4>
+<div id="outline-container-org3b9d7f1" class="outline-4">
+<h4 id="org3b9d7f1"><span class="section-number-4">1.2.2</span> Board and Ships</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <p>
     Our board's main feature will be a grid in which we represent the state of
@@ -404,9 +408,6 @@ respond to whether it is empty.
 
 <span style="color: #F0DFAF; font-weight: bold;">class</span> <span style="color: #7F9F7F;">ShipPiece</span><span style="color: #dedded;">(</span>Piece<span style="color: #dedded;">)</span>:
     <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">__init__</span><span style="color: #dedded;">(</span>this, shipId, index<span style="color: #dedded;">)</span>:
-        <span style="color: #9796c4;">"""</span>
-
-<span style="color: #9796c4;">        """</span>
         <span style="color: #E0CF9F;">this.shipId</span> = shipId
         <span style="color: #E0CF9F;">this.index</span> = index
     <span style="color: #F0DFAF; font-weight: bold;">def</span> <span style="color: #a7a6d4;">draw</span><span style="color: #dedded;">(</span>this, opponentView = <span style="color: #9796c4;">False</span><span style="color: #dedded;">)</span>:
@@ -430,14 +431,12 @@ respond to whether it is empty.
 
 <p>
 Coming to our board, we can now create the basic functionality. We need to:
+  [X] Create a new board, initializing the cells to <code>EmptyPiece</code> instances.
+  [X] Check whether we can add a ship, given its orientation and a starting pair of <code>(x,y)</code> coordinates
+  [X] Add a ship, given a pair of <code>(x,y)</code> coordinates, ship length, and an orientation (provided it can be added)
+  [X] Fire at a location
+  [X] Check whether the board is "lost" (that is, all ships have been sunk)
 </p>
-<ul class="org-ul">
-<li>Create a new board, initializing the cells to <code>EmptyPiece</code> instances.</li>
-<li>Check whether we can add a ship, given its orientation and a starting pair of <code>(x,y)</code> coordinates</li>
-<li>Add a ship, given a pair of <code>(x,y)</code> coordinates, ship length, and an orientation (provided it can be added)</li>
-<li>Fire at a location</li>
-<li>Check whether the board is "lost" (that is, all ships have been sunk)</li>
-</ul>
 
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><span style="color: #F0DFAF; font-weight: bold;">from</span> battleship.pieces <span style="color: #F0DFAF; font-weight: bold;">import</span> <span style="color: #dedded;">(</span>EmptyPiece, WaterPiece,
@@ -1015,8 +1014,8 @@ Finally, we add a method to test whether the board is "lost" (all ships are sunk
 </div>
 </div>
 
-<div id="outline-container-org76b10fa" class="outline-4">
-<h4 id="org76b10fa"><span class="section-number-4">1.2.3</span> AI</h4>
+<div id="outline-container-orgb8f41ec" class="outline-4">
+<h4 id="orgb8f41ec"><span class="section-number-4">1.2.3</span> AI</h4>
 <div class="outline-text-4" id="text-1-2-3">
 <p>
 For the "AI" part, we will adopt a simple strategy:
@@ -1209,8 +1208,8 @@ TOTAL                        272     31    89%
 </div>
 </div>
 
-<div id="outline-container-org86ea91d" class="outline-4">
-<h4 id="org86ea91d"><span class="section-number-4">1.2.4</span> The Game</h4>
+<div id="outline-container-org13bba82" class="outline-4">
+<h4 id="org13bba82"><span class="section-number-4">1.2.4</span> The Game</h4>
 <div class="outline-text-4" id="text-1-2-4">
 <p>
 With the board mechanics and AI in place, we can now create a <code>Game</code> class

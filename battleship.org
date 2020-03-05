@@ -57,9 +57,9 @@
      
 ** Data Model & Implementation
    - The core of the problem lies in representing the board's state, and its transitions.
-     - The grid itself can be represented as an array of arrays (I guess list of
-       lists in Python's parlance), and within each cell in the grid, we
-       represent the known state, which can be one of the following:
+     - The grid itself can be represented as an list of lists, and within each
+       cell in the grid, we represent the known state, which can be one of the
+       following:
        - Empty / water (there is no ship here). An empty cell can be revealed as water to the opponent once it's hit.
        - Ship. This cell corresponds to a ship. The ships themselves do not
          carry much state, but we can represent them as a =length=, and a set of
@@ -76,6 +76,8 @@
          
 *** Setup
     
+    We need some boilerplate to setup our project:
+
 #+begin_src jupyter-python :exports code :results silent :eval never :tangle "setup.py"
 from setuptools import setup
 
@@ -125,9 +127,6 @@ respond to whether it is empty.
 
   class ShipPiece(Piece):
       def __init__(this, shipId, index):
-          """
-
-          """
           this.shipId = shipId
           this.index = index
       def draw(this, opponentView = False):
@@ -148,12 +147,12 @@ respond to whether it is empty.
         return False
 #+end_src
 
-Coming to our board, we can now create the basic functionality. We need to:
-- Create a new board, initializing the cells to =EmptyPiece= instances.
-- Check whether we can add a ship, given its orientation and a starting pair of =(x,y)= coordinates
-- Add a ship, given a pair of =(x,y)= coordinates, ship length, and an orientation (provided it can be added)
-- Fire at a location
-- Check whether the board is "lost" (that is, all ships have been sunk)
+  Coming to our board, we can now create the basic functionality. We need to:
+    [X] Create a new board, initializing the cells to =EmptyPiece= instances.
+    [X] Check whether we can add a ship, given its orientation and a starting pair of =(x,y)= coordinates
+    [X] Add a ship, given a pair of =(x,y)= coordinates, ship length, and an orientation (provided it can be added)
+    [X] Fire at a location
+    [X] Check whether the board is "lost" (that is, all ships have been sunk)
 
 #+begin_src jupyter-python :exports code :results silent :eval never :tangle "battleship/board.py" :noweb yes
   from battleship.pieces import (EmptyPiece, WaterPiece,
